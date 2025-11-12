@@ -1,6 +1,6 @@
 //
 //  Item.swift
-//  HealthTracker
+//  HealthTracker/Schemas
 //
 //  Created by Arthur Efremenko on 10/24/25.
 //

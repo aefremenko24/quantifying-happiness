@@ -1,6 +1,6 @@
 //
 //  SuggestionsView.swift
-//  HealthTracker
+//  HealthTracker/Views
 //
 //  Created by Arthur Efremenko on 10/26/25.
 //

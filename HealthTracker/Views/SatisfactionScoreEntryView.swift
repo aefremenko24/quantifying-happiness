@@ -1,6 +1,6 @@
 //
 //  SatisfactionScoreEntryView.swift
-//  HealthTracker
+//  HealthTracker/Views
 //
 //  Created by Arthur Efremenko on 10/26/25.
 //
@@ -8,28 +8,26 @@
 import SwiftUI
 
 struct SatisfactionScoreEntryView: View {
-    @State private var satisfactionScore: Float = 5.0
+    @Binding var satisfactionScore: Float
     @State private var isEditing = false
-    
+
     var body: some View {
         VStack {
             Text("Today's satisfaction score")
-            
             Slider(
                 value: $satisfactionScore,
                 in: 0...10,
-                step: 1
+                step: 1,
+                onEditingChanged: { isEditing = $0 }
             ) {
                 Text("Satisfaction score")
             } minimumValueLabel: {
                 Text("0")
             } maximumValueLabel: {
                 Text("10")
-            } onEditingChanged: { editing in
-                isEditing = editing
             }
             Text("\(Int(satisfactionScore))")
-                .foregroundColor(isEditing ? .red : .blue)
+                .foregroundStyle(isEditing ? .red : .blue)
                 .font(.title)
                 .fontWeight(.bold)
         }
