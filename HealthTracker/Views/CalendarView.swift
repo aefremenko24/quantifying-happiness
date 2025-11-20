@@ -32,7 +32,7 @@ struct CalendarView: View {
                 .padding(.horizontal, 8)
             }
         }
-        .navigationTitle(monthAnchor, format: .dateTime.year().month())
+        .navigationTitle(monthAnchor.formatted(.iso8601.year().month()))
         .onAppear(perform: loadScores)
         .onChange(of: monthAnchor) { _, _ in loadScores() }
     }

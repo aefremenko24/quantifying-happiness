@@ -17,14 +17,15 @@ struct SatisfactionScoreEntryView: View {
             Slider(
                 value: $satisfactionScore,
                 in: 0...10,
-                step: 1,
-                onEditingChanged: { isEditing = $0 }
+                step: 1
             ) {
                 Text("Satisfaction score")
             } minimumValueLabel: {
                 Text("0")
             } maximumValueLabel: {
                 Text("10")
+            } onEditingChanged: {
+                isEditing = $0
             }
             Text("\(Int(satisfactionScore))")
                 .foregroundStyle(isEditing ? .red : .blue)
@@ -35,5 +36,6 @@ struct SatisfactionScoreEntryView: View {
 }
 
 #Preview {
-    SatisfactionScoreEntryView()
+    @Previewable @State var satisfactionScore: Float = 5.0
+    SatisfactionScoreEntryView(satisfactionScore: $satisfactionScore)
 }
