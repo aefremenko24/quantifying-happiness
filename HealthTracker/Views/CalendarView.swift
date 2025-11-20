@@ -10,8 +10,11 @@ struct CalendarView: View {
     @Environment(\.modelContext) private var ctx
     let selectedDate: Date
     let onSelectDate: (Date) -> Void
+    let onImportCSV: (URL) -> Void 
+
     @State private var monthAnchor: Date = Date().startOfDay
     @State private var scoresByDay: [Date: Int] = [:]
+    @State private var showingImporter = false
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
 
@@ -31,11 +34,37 @@ struct CalendarView: View {
                 }
                 .padding(.horizontal, 8)
             }
+
+            Button {
+                showingImporter = true
+            } label: {
+                Text("Import CSV Data")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .padding(.horizontal)
+            .padding(.bottom, 8)
         }
         .navigationTitle(monthAnchor.formatted(.iso8601.year().month()))
         .onAppear(perform: loadScores)
         .onChange(of: monthAnchor) { _, _ in loadScores() }
+        .fileImporter(
+            isPresented: $showingImporter,
+            allowedContentTypes: [.commaSeparatedText, .plainText],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    onImportCSV(url)
+                    loadScores()
+                }
+            case .failure(let error):
+                print("File import failed: \(error)")
+            }
+        }
     }
+
 
     // Top bar of the calendar showing month name with left and right arrows to navigate months
     private var header: some View {
@@ -164,4 +193,5 @@ struct CalendarView: View {
             return Color(red: 1 - p, green: 1, blue: 0, opacity: 0.5 + 0.4*p)
         }
     }
+    
 }

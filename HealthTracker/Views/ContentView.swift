@@ -32,6 +32,9 @@ struct ContentView: View {
                             day in
                             selectedDate = day
                             selectedTab = .home
+                        },
+                        onImportCSV: { url in
+                            CSVImportService.importSatisfactionEntries(from: url, into: modelContext)
                         }
                     )
                 }
