@@ -89,9 +89,11 @@ class KNNRegressor {
         var distances: [(distance: Double, satisfaction: Double)] = []
         
         for dataPoint in trainingData {
-            let scaledFeatures = scaler.transform(dataPoint.toList())
-            let distance = try calculateEuclideanDistance(from: scaledQuery, to: scaledFeatures)
-            distances.append((distance, dataPoint.userSatisfactionScore))
+            if dataPoint.userSatisfactionScore != nil {
+                let scaledFeatures = scaler.transform(dataPoint.toList())
+                let distance = try calculateEuclideanDistance(from: scaledQuery, to: scaledFeatures)
+                distances.append((distance, dataPoint.userSatisfactionScore!))
+            }
         }
         
         distances.sort { $0.distance < $1.distance }
