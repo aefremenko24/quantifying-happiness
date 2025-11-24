@@ -7,12 +7,15 @@
 
 import SwiftUI
 import HealthKit
+import SwiftData
 
 struct ContentView: View {
     private enum Tab { case home, calendar }
 
     @State private var selectedTab: Tab = .home
     @State private var selectedDate: Date = Date()
+    
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         if !HKHealthStore.isHealthDataAvailable() {
@@ -34,7 +37,7 @@ struct ContentView: View {
                             selectedTab = .home
                         },
                         onImportCSV: { url in
-                            CSVImportService.importSatisfactionEntries(from: url, into: modelContext)
+                            CSVImportService.importSatisfactionEntries(from: url, into: context)
                         }
                     )
                 }

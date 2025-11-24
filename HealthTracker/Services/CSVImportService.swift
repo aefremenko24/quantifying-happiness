@@ -44,7 +44,7 @@ enum CSVImportService {
             let existing = (try? context.fetch(descriptor).first) ?? nil
             let entry = existing ?? SatisfactionEntry(day: day, score: score)
 
-            entry.score = score
+            entry.userSatisfactionScore = score
 
             func doubleFromHeader(_ name: String) -> Double? {
                 guard let idx = header.firstIndex(of: name), idx < cols.count else { return nil }
@@ -69,11 +69,5 @@ enum CSVImportService {
         }
 
         try? context.save()
-    }
-}
-
-private extension Date {
-    var startOfDay: Date {
-        Calendar.current.startOfDay(for: self)
     }
 }

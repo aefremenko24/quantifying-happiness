@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+internal import UniformTypeIdentifiers
 
 struct CalendarView: View {
     @Environment(\.modelContext) private var ctx
@@ -144,7 +145,7 @@ struct CalendarView: View {
         if let entries = try? ctx.fetch(descriptor) {
             var map: [Date: Int] = [:]
             for e in entries {
-                if let s = e.score {
+                if let s = e.userSatisfactionScore {
                     map[e.day.startOfDay] = min(10, max(0, s))
                 }
             }

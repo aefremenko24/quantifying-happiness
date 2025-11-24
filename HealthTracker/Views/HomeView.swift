@@ -24,9 +24,9 @@ struct HomeView: View {
                 if let entry {
                     SatisfactionScoreEntryView(
                         satisfactionScore: Binding<Float>(
-                            get: { Float(entry.score ?? 5) },
+                            get: { Float(entry.userSatisfactionScore ?? 5) },
                             set: { newVal in
-                                entry.score = Int(newVal.rounded())
+                                entry.userSatisfactionScore = Int(newVal.rounded())
                                 try? context.save()
                             }
                         )
