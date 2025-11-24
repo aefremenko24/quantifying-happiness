@@ -9,21 +9,21 @@ import Foundation
 @Model
 final class SatisfactionEntry {
     @Attribute(.unique) var day: Date
-
-    var userSatisfactionScore: Int?
-
-    var stepsToday: Double
-    var timeInBedLastNight: Double
-    var activeEnergyToday: Double
-    var exerciseMinutesToday: Double
-    var standHoursToday: Double
-    var daylightTimeToday: Double
-    var distanceWalkingToday: Double
-    var flightsClimbedToday: Double
-    var restingHeartRateToday: Double?
+    
+    var userSatisfactionScore: Double       // [0, 10]
+    
+    var stepsToday: Double                  // [0, 20000]
+    var timeInBedLastNight: Double          // [0, 20]
+    var activeEnergyToday: Double           // [0, 2000]
+    var exerciseMinutesToday: Double        // [0, 1000]
+    var standHoursToday: Double             // [0, 24]
+    var daylightTimeToday: Double           // [0, 24]
+    var distanceWalkingToday: Double        // [0, 40000]
+    var flightsClimbedToday: Double         // [0, 100]
+    var restingHeartRateToday: Double       // [0, 200]
 
     init(day: Date,
-         score: Int? = nil,
+         score: Double = 0,
          stepsToday: Double = 0,
          timeInBedLastNight: Double = 0,
          activeEnergyToday: Double = 0,
@@ -32,7 +32,7 @@ final class SatisfactionEntry {
          daylightTimeToday: Double = 0,
          distanceWalkingToday: Double = 0,
          flightsClimbedToday: Double = 0,
-         restingHeartRateToday: Double? = nil) {
+         restingHeartRateToday: Double = 0) {
 
         self.day = Calendar.current.startOfDay(for: day)
         self.userSatisfactionScore = score
