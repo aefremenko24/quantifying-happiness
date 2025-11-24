@@ -46,6 +46,20 @@ final class SatisfactionEntry {
         self.flightsClimbedToday = flightsClimbedToday
         self.restingHeartRateToday = restingHeartRateToday
     }
+    
+    func toList() -> [Double] {
+        return [
+            self.stepsToday,
+            self.timeInBedLastNight,
+            self.activeEnergyToday,
+            self.exerciseMinutesToday,
+            self.standHoursToday,
+            self.daylightTimeToday,
+            self.distanceWalkingToday,
+            self.flightsClimbedToday,
+            self.restingHeartRateToday,
+        ]
+    }
 }
 
 extension Date {
