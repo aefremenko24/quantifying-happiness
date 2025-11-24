@@ -6,6 +6,11 @@
 import SwiftData
 import Foundation
 
+// Custom errors
+private enum SatisfactionEntryError: Error {
+    case valueError(String)
+}
+
 @Model
 final class SatisfactionEntry {
     @Attribute(.unique) var day: Date
@@ -45,6 +50,26 @@ final class SatisfactionEntry {
         self.distanceWalkingToday = distanceWalkingToday
         self.flightsClimbedToday = flightsClimbedToday
         self.restingHeartRateToday = restingHeartRateToday
+    }
+    
+    init(fromList list: [Double], satisfactionScore: Double) throws {
+        guard list.count == 9 else {
+            throw SatisfactionEntryError.valueError("Invalid parameter count for SatisfactionEntry")
+        }
+        
+        self.day = Date().startOfDay
+        self.userSatisfactionScore = satisfactionScore
+
+        self.stepsToday = list[0]
+        self.timeInBedLastNight = list[1]
+        self.activeEnergyToday = list[2]
+        self.exerciseMinutesToday = list[3]
+        self.standHoursToday = list[4]
+        self.daylightTimeToday = list[5]
+        self.distanceWalkingToday = list[6]
+        self.flightsClimbedToday = list[7]
+        self.restingHeartRateToday = list[8]
+        
     }
     
     func toList() -> [Double] {
