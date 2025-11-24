@@ -7,6 +7,11 @@
 
 import Foundation
 
+// Custom errors
+private enum LocalSearchOptimizerError: Error {
+    case valueError(String)
+}
+
 class LocalSearchOptimizer {
     private let data: [SatisfactionEntry]
     private let regressor: KNNRegressor
@@ -34,8 +39,12 @@ class LocalSearchOptimizer {
         maxIterations: Int
     ) throws -> (value: SatisfactionEntry, history: [SatisfactionEntry]) {
         
+        guard initialParams.userSatisfactionScore != nil else {
+            throw LocalSearchOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
+        }
+        
         var currentParams = initialParams
-        var currentValue = currentParams.userSatisfactionScore
+        var currentValue = currentParams.userSatisfactionScore!
         var bestParams = currentParams
         var bestValue = currentValue
         var history: [SatisfactionEntry] = [currentParams]

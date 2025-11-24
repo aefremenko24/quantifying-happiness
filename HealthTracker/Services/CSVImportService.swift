@@ -35,7 +35,7 @@ enum CSVImportService {
             let dateString = cols[dateIdx]
             guard let day = formatter.date(from: dateString)?.startOfDay else { continue }
 
-            let score = Int(cols[scoreIdx]) ?? 0
+            let score = Double(cols[scoreIdx]) ?? 0
 
             let descriptor = FetchDescriptor<SatisfactionEntry>(
                 predicate: #Predicate { $0.day == day },

@@ -15,7 +15,7 @@ private enum SatisfactionEntryError: Error {
 final class SatisfactionEntry {
     @Attribute(.unique) var day: Date
     
-    var userSatisfactionScore: Double       // [0, 10]
+    var userSatisfactionScore: Double?      // [0, 10]
     
     var stepsToday: Double                  // [0, 20000]
     var timeInBedLastNight: Double          // [0, 20]
@@ -28,7 +28,7 @@ final class SatisfactionEntry {
     var restingHeartRateToday: Double       // [0, 200]
 
     init(day: Date,
-         score: Double = 0,
+         score: Double,
          stepsToday: Double = 0,
          timeInBedLastNight: Double = 0,
          activeEnergyToday: Double = 0,
