@@ -28,7 +28,7 @@ final class SatisfactionEntry {
     var restingHeartRateToday: Double       // [0, 200]
 
     init(day: Date,
-         score: Double,
+         score: Double?,
          stepsToday: Double = 0,
          timeInBedLastNight: Double = 0,
          activeEnergyToday: Double = 0,

@@ -14,7 +14,7 @@ struct CalendarView: View {
     let onImportCSV: (URL) -> Void 
 
     @State private var monthAnchor: Date = Date().startOfDay
-    @State private var scoresByDay: [Date: Int] = [:]
+    @State private var scoresByDay: [Date: Double] = [:]
     @State private var showingImporter = false
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
@@ -23,19 +23,19 @@ struct CalendarView: View {
         VStack(spacing: 8) {
             header
             weekdayHeader
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 6) {
-                    ForEach(cellsForMonth(), id: \.self) { cell in
-                        if let day = cell {
-                            dayCell(day: day)
-                        } else {
-                            Rectangle().fill(Color.clear).aspectRatio(1, contentMode: .fit)
-                        }
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(cellsForMonth(), id: \.self) { cell in
+                    if let day = cell {
+                        dayCell(day: day)
+                    } else {
+                        Rectangle().fill(Color.clear).aspectRatio(1, contentMode: .fit)
                     }
                 }
-                .padding(.horizontal, 8)
             }
-
+            .padding(.horizontal, 8)
+            
+            Spacer()
+            
             Button {
                 showingImporter = true
             } label: {
@@ -46,7 +46,7 @@ struct CalendarView: View {
             .padding(.horizontal)
             .padding(.bottom, 8)
         }
-        .navigationTitle(monthAnchor.formatted(.iso8601.year().month()))
+        .navigationTitle("Calendar")
         .onAppear(perform: loadScores)
         .onChange(of: monthAnchor) { _, _ in loadScores() }
         .fileImporter(
@@ -143,10 +143,10 @@ struct CalendarView: View {
             predicate: #Predicate { $0.day >= start && $0.day < end }
         )
         if let entries = try? ctx.fetch(descriptor) {
-            var map: [Date: Int] = [:]
+            var map: [Date: Double] = [:]
             for e in entries {
                 if let s = e.userSatisfactionScore {
-                    map[e.day.startOfDay] = min(10, max(0, s))
+                    map[e.day.startOfDay] = min(10.0, max(0.0, s))
                 }
             }
             scoresByDay = map
@@ -183,7 +183,7 @@ struct CalendarView: View {
     }
 
     // Helper function to map user satisfaction score to a color where closer to 0 is red, yellow is around 5, and green is 10
-    private func backgroundColor(for score: Int?) -> Color {
+    private func backgroundColor(for score: Double?) -> Color {
         guard let score = score else { return .clear }
         let t = Double(score) / 10.0
         if t <= 0.5 {
@@ -195,4 +195,8 @@ struct CalendarView: View {
         }
     }
     
+}
+
+#Preview {
+    CalendarView(selectedDate: Date(), onSelectDate: {_ in}, onImportCSV: {_ in})
 }
