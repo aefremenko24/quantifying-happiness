@@ -62,7 +62,7 @@ enum HealthMetricType {
 
 // MARK: - Health Metrics Result
 
-struct HealthMetrics {
+struct HealthMetrics: Equatable {
     let stepsToday: Double
     let timeInBedLastNight: Double // minutes
     let activeEnergyToday: Double // kcal
@@ -71,7 +71,7 @@ struct HealthMetrics {
     let daylightTimeToday: Double // minutes
     let distanceWalkingToday: Double // meters
     let flightsClimbedToday: Double
-    let restingHeartRateToday: Double? // bpm, optional as may not be available
+    let restingHeartRateToday: Double // bpm
     
     // Activity Ring Progress (0.0 to 1.0+)
     var moveRingProgress: Double {
@@ -80,7 +80,7 @@ struct HealthMetrics {
     }
     
     var exerciseRingProgress: Double {
-        exerciseMinutesToday / 30.0
+        exerciseMinutesToday / 60.0
     }
     
     var standRingProgress: Double {
@@ -99,16 +99,16 @@ class HealthMetricsManager {
     
     // MARK: - Public API
     
-    func fetchAllMetrics() async throws -> HealthMetrics {
-        async let steps = fetchTodayMetric(.steps)
-        async let timeInBed = fetchLastNightTimeInBed()
-        async let activeEnergy = fetchTodayMetric(.activeEnergy)
-        async let exerciseTime = fetchTodayMetric(.exerciseTime)
-        async let standHours = fetchStandHoursToday()
-        async let daylightTime = fetchTodayMetric(.daylightTime)
-        async let distance = fetchTodayMetric(.distanceWalking)
-        async let flights = fetchTodayMetric(.flightsClimbed)
-        async let restingHR = fetchRestingHeartRateToday()
+    func fetchAllMetrics(for date: Date) async throws -> HealthMetrics {
+        async let steps = fetchMetricForDay(for: date, metricType: .steps)
+        async let timeInBed = fetchTimeInBed(for: date)
+        async let activeEnergy = fetchMetricForDay(for: date, metricType: .activeEnergy)
+        async let exerciseTime = fetchMetricForDay(for: date, metricType: .exerciseTime)
+        async let standHours = fetchStandHours(for: date)
+        async let daylightTime = fetchMetricForDay(for: date, metricType: .daylightTime)
+        async let distance = fetchMetricForDay(for: date, metricType: .distanceWalking)
+        async let flights = fetchMetricForDay(for: date, metricType: .flightsClimbed)
+        async let restingHR = fetchRestingHeartRate(for: date)
         
         return try await HealthMetrics(
             stepsToday: steps,
@@ -126,26 +126,24 @@ class HealthMetricsManager {
     // MARK: - Individual Metric Functions
     
     /// Fetches today's value for a given metric type
-    func fetchTodayMetric(_ metricType: HealthMetricType) async throws -> Double {
+    func fetchMetricForDay(for date: Date, metricType: HealthMetricType) async throws -> Double {
         guard let quantityType = metricType.quantityType else {
             throw HealthMetricsError.invalidMetricType
         }
         
-        let now = Date()
-        let startOfDay = Calendar.current.startOfDay(for: now)
+        let startOfDay = Calendar.current.startOfDay(for: date)
         return try await fetchCumulativeSum(
             quantityType: quantityType,
             unit: metricType.unit,
             start: startOfDay,
-            end: now
+            end: date
         )
     }
     
     /// Fetches time in bed for last night (previous sleep period)
-    func fetchLastNightTimeInBed() async throws -> Double {
+    func fetchTimeInBed(for date: Date) async throws -> Double {
         let calendar = Calendar.current
-        let now = Date()
-        let startOfToday = calendar.startOfDay(for: now)
+        let startOfToday = calendar.startOfDay(for: date)
         
         // Look back from start of today to 24 hours prior to capture last night's sleep
         let endOfYesterday = startOfToday
@@ -197,15 +195,14 @@ class HealthMetricsManager {
     }
     
     /// Fetch stand hours from activity summary
-    func fetchStandHoursToday() async throws -> Double {
+    func fetchStandHours(for date: Date) async throws -> Double {
         let calendar = Calendar.current
-        let now = Date()
-        let startOfToday = calendar.startOfDay(for: now)
+        let startOfToday = calendar.startOfDay(for: date)
         
         return try await withCheckedThrowingContinuation { continuation in
             let predicate = HKQuery.predicateForSamples(
                 withStart: startOfToday,
-                end: now,
+                end: date,
                 options: .strictStartDate
             )
             
@@ -229,18 +226,15 @@ class HealthMetricsManager {
     }
     
     /// Fetches today's resting heart rate (returns nil if not available)
-    func fetchRestingHeartRateToday() async throws -> Double? {
-        let now = Date()
-        let startOfDay = Calendar.current.startOfDay(for: now)
-        
+    func fetchRestingHeartRate(for date: Date) async throws -> Double {
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .restingHeartRate) else {
             throw HealthMetricsError.invalidMetricType
         }
         
         return try await withCheckedThrowingContinuation { continuation in
             let predicate = HKQuery.predicateForSamples(
-                withStart: startOfDay,
-                end: now,
+                withStart: date.startOfDay,
+                end: date,
                 options: .strictStartDate
             )
             
@@ -261,48 +255,12 @@ class HealthMetricsManager {
                 }
                 
                 guard let sample = samples?.first as? HKQuantitySample else {
-                    continuation.resume(returning: nil)
+                    continuation.resume(returning: 0.0)
                     return
                 }
                 
                 let bpm = sample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
                 continuation.resume(returning: bpm)
-            }
-            
-            healthStore.execute(query)
-        }
-    }
-    
-    /// Fetches activity ring data for today (Move, Exercise, Stand)
-    func fetchActivityRings() async throws -> (move: Double, exercise: Double, stand: Double) {
-        let calendar = Calendar.current
-        let now = Date()
-        let components = calendar.dateComponents([.year, .month, .day], from: now)
-        
-        let activitySummaryType = HKActivitySummaryType.activitySummaryType()
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            let predicate = HKQuery.predicate(forActivitySummariesBetweenStart: components, end: components)
-            
-            let query = HKActivitySummaryQuery(predicate: predicate) { _, summaries, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let summary = summaries?.first else {
-                    continuation.resume(returning: (0.0, 0.0, 0.0))
-                    return
-                }
-                
-                let moveProgress = summary.activeEnergyBurned.doubleValue(for: .kilocalorie()) /
-                summary.activeEnergyBurnedGoal.doubleValue(for: .kilocalorie())
-                let exerciseProgress = summary.appleExerciseTime.doubleValue(for: .minute()) /
-                summary.appleExerciseTimeGoal.doubleValue(for: .minute())
-                let standProgress = summary.appleStandHours.doubleValue(for: .minute()) /
-                summary.appleStandHoursGoal.doubleValue(for: .minute())
-                
-                continuation.resume(returning: (moveProgress, exerciseProgress, standProgress))
             }
             
             healthStore.execute(query)

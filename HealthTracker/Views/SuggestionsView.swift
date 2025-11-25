@@ -68,8 +68,8 @@ struct SuggestionsView: View {
 }
 
 #Preview {
-    var currentSatisfactionEntry = SatisfactionEntry(fromList: [1, 2, 3, 4, 5, 6, 7, 8, 9], satisfactionScore: 10) ?? SatisfactionEntry(day: Date(), score: 10)
-    var suggestedSatisfactionEntry = SatisfactionEntry(fromList: [9, 8, 7, 6, 5, 4, 3, 2, 1], satisfactionScore: 5) ?? SatisfactionEntry(day: Date(), score: 10)
+    var currentSatisfactionEntry = SatisfactionEntry(from: [1, 2, 3, 4, 5, 6, 7, 8, 9], satisfactionScore: 10) ?? SatisfactionEntry(day: Date(), score: 10)
+    var suggestedSatisfactionEntry = SatisfactionEntry(from: [9, 8, 7, 6, 5, 4, 3, 2, 1], satisfactionScore: 5) ?? SatisfactionEntry(day: Date(), score: 10)
     
     SuggestionsView(currentSatisfactionEntry: currentSatisfactionEntry, suggestedSatisfactionEntry: suggestedSatisfactionEntry)
 }

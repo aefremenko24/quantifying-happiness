@@ -57,6 +57,7 @@ struct SatisfactionScoreEntryView: View {
 
         }
         .frame(width: .infinity, height: barHeight + 40)
+        .sensoryFeedback(.selection, trigger: satisfactionScore)
     }
     
     private func updateValue(for location: CGPoint, in geometry: GeometryProxy) {
