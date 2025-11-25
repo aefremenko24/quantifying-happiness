@@ -56,7 +56,7 @@ struct SatisfactionScoreEntryView: View {
             Spacer()
 
         }
-        .frame(width: .infinity, height: barHeight + 40)
+        .frame(height: barHeight + 40)
         .sensoryFeedback(.selection, trigger: satisfactionScore)
     }
     

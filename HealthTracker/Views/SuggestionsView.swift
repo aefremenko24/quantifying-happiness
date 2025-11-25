@@ -23,18 +23,24 @@ struct SuggestionsView: View {
                 let currentMetricValues: [Double] = currentSatisfactionEntry.toList()
                 let suggestedMetricValues: [Double] = suggestedSatisfactionEntry!.toList()
                 ForEach(Array(metricNames.enumerated()), id: \.offset) { index, metricName in
-                    let metricDiff: Double = suggestedMetricValues[index] - currentMetricValues[index]
-                    let color: Color = metricDiff < 0 ? .red : .green
+                    let metricDiff: Int = Int(suggestedMetricValues[index] - currentMetricValues[index])
+                    let color: Color = metricDiff < 0 ? .red : metricDiff == 0 ? .primary : .green
                     HStack {
                         Text(metricName)
                             .font(.headline)
                         Spacer()
-                        Image(systemName: metricDiff < 0 ? "chevron.down" : "chevron.up")
-                            .foregroundStyle(color)
                         Text("\(abs(metricDiff))")
                             .font(.headline)
                             .fontWeight(.bold)
                             .foregroundStyle(color)
+                        
+                        if metricDiff == 0 {
+                            Text("—")
+                                .foregroundStyle(color)
+                        } else {
+                            Image(systemName: metricDiff < 0 ? "chevron.down" : "chevron.up")
+                                .foregroundStyle(color)
+                        }
                     }
                     .padding()
                 }
@@ -68,8 +74,8 @@ struct SuggestionsView: View {
 }
 
 #Preview {
-    var currentSatisfactionEntry = SatisfactionEntry(from: [1, 2, 3, 4, 5, 6, 7, 8, 9], satisfactionScore: 10) ?? SatisfactionEntry(day: Date(), score: 10)
-    var suggestedSatisfactionEntry = SatisfactionEntry(from: [9, 8, 7, 6, 5, 4, 3, 2, 1], satisfactionScore: 5) ?? SatisfactionEntry(day: Date(), score: 10)
+    var currentSatisfactionEntry = SatisfactionEntry(from: [10298, 338, 621.67, 80, 18, 125, 7552.17, 7, 71], satisfactionScore: 10) ?? SatisfactionEntry(day: Date(), score: 10)
+    var suggestedSatisfactionEntry = SatisfactionEntry(from: [13902, 434, 547.22, 21, 16, 237, 10293.95, 7, 60], satisfactionScore: 5) ?? SatisfactionEntry(day: Date(), score: 10)
     
     SuggestionsView(currentSatisfactionEntry: currentSatisfactionEntry, suggestedSatisfactionEntry: suggestedSatisfactionEntry)
 }

@@ -110,7 +110,8 @@ final class SatisfactionEntry {
             "Stand Hours",
             "Daylight Time",
             "Distance Walked",
-            "Flights Climbed"
+            "Flights Climbed",
+            "Resting Heart Rate"
         ]
     }
 }
