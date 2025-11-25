@@ -12,21 +12,16 @@ struct HomeView: View {
     @State private var entry: SatisfactionEntry?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text(selectedDate, format: Date.FormatStyle().weekday(.wide).day(.twoDigits).month(.abbreviated))
-                    .font(.title).bold().padding(.vertical, 8)
-                Spacer()
-            }
-            .padding(.horizontal)
-
+        VStack(alignment: .center, spacing: 16) {
             Group {
                 if let entry {
+                    Text("How happy are you today?")
+                        .fontWeight(.bold)
                     SatisfactionScoreEntryView(
-                        satisfactionScore: Binding<Float>(
-                            get: { Float(entry.userSatisfactionScore ?? 5) },
+                        satisfactionScore: Binding<Int>(
+                            get: { Int(entry.userSatisfactionScore ?? 5) },
                             set: { newVal in
-                                entry.userSatisfactionScore = Int(newVal.rounded())
+                                entry.userSatisfactionScore = Double(newVal)
                                 try? context.save()
                             }
                         )
@@ -35,7 +30,6 @@ struct HomeView: View {
                     Text("Loading…").foregroundStyle(.secondary)
                 }
             }
-            .padding(.horizontal)
 
             HealthDataView()
                 .padding(.top, 8)
@@ -58,7 +52,9 @@ struct HomeView: View {
                 .padding(.bottom, 8)
             }
         }
-        .navigationTitle("Home")
+        .navigationTitle(selectedDate.formatted(
+                 Date.FormatStyle().weekday(.wide).day(.twoDigits).month(.abbreviated))
+        )
         .onAppear { ensureEntry() }
         .onChange(of: selectedDate) { _, _ in ensureEntry() }
     }
@@ -95,4 +91,10 @@ struct HomeView: View {
         try? context.save()
         self.entry = nil
     }
+}
+
+#Preview {
+    @Previewable @State var selectedDate: Date = Date()
+    
+    HomeView(selectedDate: $selectedDate)
 }

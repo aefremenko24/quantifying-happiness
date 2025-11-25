@@ -24,6 +24,7 @@ struct ContentView: View {
             TabView(selection: $selectedTab) {
                 NavigationStack {
                     HomeView(selectedDate: $selectedDate)
+                        .padding(.vertical, 10)
                 }
                 .tabItem { Label("Home", systemImage: "house") }
                 .tag(Tab.home)
@@ -40,6 +41,7 @@ struct ContentView: View {
                             CSVImportService.importSatisfactionEntries(from: url, into: context)
                         }
                     )
+                    .padding(.vertical, 10)
                 }
                 .tabItem { Label("Calendar", systemImage: "calendar") }
                 .tag(Tab.calendar)
