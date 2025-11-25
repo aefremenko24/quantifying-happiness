@@ -80,9 +80,10 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $showingDayDetails) {
+            loadScores()
+        } content: {
             SatisfactionEntryView(date: selectedDate.startOfDay, satisfactionEntry: $entry) {
                 try? context.save()
-                loadScores()
             }
             .presentationDragIndicator(.visible)
         }
@@ -129,6 +130,7 @@ struct CalendarView: View {
         let score = scoresByDay[day.startOfDay]
         Button {
             self.selectedDate = day
+            ensureEntry()
             self.showingDayDetails = true
         } label: {
             ZStack {
@@ -189,6 +191,7 @@ struct CalendarView: View {
         context.delete(entry)
         try? context.save()
         self.entry = nil
+        loadScores()
     }
     
     // Fetches all SatisfactionEntry rows that fall within the visible month and caches them in a dictionary keyed by day
