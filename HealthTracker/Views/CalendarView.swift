@@ -8,34 +8,48 @@ import SwiftData
 internal import UniformTypeIdentifiers
 
 struct CalendarView: View {
-    @Environment(\.modelContext) private var ctx
-    let selectedDate: Date
-    let onSelectDate: (Date) -> Void
-    let onImportCSV: (URL) -> Void 
+    @Environment(\.modelContext) private var context
 
+    @State var selectedDate: Date
     @State private var monthAnchor: Date = Date().startOfDay
-    @State private var scoresByDay: [Date: Int] = [:]
-    @State private var showingImporter = false
+    @State private var scoresByDay: [Date: Double] = [:]
+    @State private var showingImporter: Bool = false
+    @State private var showingDayDetails: Bool = false
+    @State private var entry: SatisfactionEntry?
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
+    
+    let onImportCSV: (URL) -> Void
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 20) {
             header
             weekdayHeader
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 6) {
-                    ForEach(cellsForMonth(), id: \.self) { cell in
-                        if let day = cell {
-                            dayCell(day: day)
-                        } else {
-                            Rectangle().fill(Color.clear).aspectRatio(1, contentMode: .fit)
-                        }
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(cellsForMonth(), id: \.self) { cell in
+                    if let day = cell {
+                        dayCell(day: day)
+                    } else {
+                        Rectangle().fill(Color.clear).aspectRatio(1, contentMode: .fit)
                     }
                 }
-                .padding(.horizontal, 8)
             }
-
+            .padding(.horizontal, 8)
+            
+            Spacer()
+            
+            if entry != nil {
+                Button(role: .destructive) {
+                    deleteCurrentEntry()
+                } label: {
+                    Text("Delete Entry")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .padding(.horizontal)
+            }
+            
             Button {
                 showingImporter = true
             } label: {
@@ -45,8 +59,9 @@ struct CalendarView: View {
             .buttonStyle(.bordered)
             .padding(.horizontal)
             .padding(.bottom, 8)
+                
         }
-        .navigationTitle(monthAnchor.formatted(.iso8601.year().month()))
+        .navigationTitle("Calendar")
         .onAppear(perform: loadScores)
         .onChange(of: monthAnchor) { _, _ in loadScores() }
         .fileImporter(
@@ -63,6 +78,14 @@ struct CalendarView: View {
             case .failure(let error):
                 print("File import failed: \(error)")
             }
+        }
+        .sheet(isPresented: $showingDayDetails) {
+            loadScores()
+        } content: {
+            SatisfactionEntryView(date: selectedDate.startOfDay, satisfactionEntry: $entry) {
+                try? context.save()
+            }
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -106,11 +129,13 @@ struct CalendarView: View {
     private func dayCell(day: Date) -> some View {
         let score = scoresByDay[day.startOfDay]
         Button {
-            onSelectDate(day)
+            self.selectedDate = day
+            ensureEntry()
+            self.showingDayDetails = true
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(Color.secondary.opacity(0.3))
+                    .strokeBorder(day == selectedDate ? Color.blue :  Color.secondary.opacity(0.3))
                     .background(
                         RoundedRectangle(cornerRadius: 8)
                             .fill(backgroundColor(for: score))
@@ -124,7 +149,7 @@ struct CalendarView: View {
                     Spacer()
 
                     if let score {
-                        Text("\(score)")
+                        Text("\(Int(score))")
                             .font(.headline)
                             .padding(.bottom, 6)
                     }
@@ -136,17 +161,50 @@ struct CalendarView: View {
         .buttonStyle(.plain)
     }
 
+    // Helper method to fetch the entry for a specific date (if there exists one)
+    private func fetchEntry(for day: Date) -> SatisfactionEntry? {
+        let dayStart = day.startOfDay
+        let descriptor = FetchDescriptor<SatisfactionEntry>(
+            predicate: #Predicate { $0.day == dayStart },
+            sortBy: []
+        )
+        return (try? context.fetch(descriptor).first) ?? nil
+    }
+    
+    // Helper Method to look up an entry for the current day selected and load it if it exists, if not, it will create an entry.
+    private func ensureEntry() {
+        let day = selectedDate.startOfDay
+        if let existing = fetchEntry(for: day) {
+            entry = existing
+        } else {
+            let newEntry = SatisfactionEntry(day: day, score: nil)
+            context.insert(newEntry)
+            try? context.save()
+            entry = newEntry
+        }
+    }
+    
+    // Helper Method to delete an entry for the current day selected (only shows up if there is an entry for that day)
+    private func deleteCurrentEntry() {
+        guard let entry
+        else { return }
+        context.delete(entry)
+        try? context.save()
+        self.entry = nil
+        loadScores()
+    }
+    
     // Fetches all SatisfactionEntry rows that fall within the visible month and caches them in a dictionary keyed by day
     private func loadScores() {
         let (start, end) = monthDateRange()
         let descriptor = FetchDescriptor<SatisfactionEntry>(
             predicate: #Predicate { $0.day >= start && $0.day < end }
         )
-        if let entries = try? ctx.fetch(descriptor) {
-            var map: [Date: Int] = [:]
+        if let entries = try? context.fetch(descriptor) {
+            var map: [Date: Double] = [:]
             for e in entries {
                 if let s = e.userSatisfactionScore {
-                    map[e.day.startOfDay] = min(10, max(0, s))
+                    map[e.day.startOfDay] = min(10.0, max(0.0, s))
                 }
             }
             scoresByDay = map
@@ -183,7 +241,7 @@ struct CalendarView: View {
     }
 
     // Helper function to map user satisfaction score to a color where closer to 0 is red, yellow is around 5, and green is 10
-    private func backgroundColor(for score: Int?) -> Color {
+    private func backgroundColor(for score: Double?) -> Color {
         guard let score = score else { return .clear }
         let t = Double(score) / 10.0
         if t <= 0.5 {
@@ -195,4 +253,8 @@ struct CalendarView: View {
         }
     }
     
+}
+
+#Preview {
+    CalendarView(selectedDate: Date(), onImportCSV: {_ in})
 }

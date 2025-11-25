@@ -13,7 +13,6 @@ struct ContentView: View {
     private enum Tab { case home, calendar }
 
     @State private var selectedTab: Tab = .home
-    @State private var selectedDate: Date = Date()
     
     @Environment(\.modelContext) private var context
 
@@ -23,23 +22,20 @@ struct ContentView: View {
         } else {
             TabView(selection: $selectedTab) {
                 NavigationStack {
-                    HomeView(selectedDate: $selectedDate)
+                    HomeView()
+                        .padding(.vertical, 10)
                 }
                 .tabItem { Label("Home", systemImage: "house") }
                 .tag(Tab.home)
 
                 NavigationStack {
                     CalendarView(
-                        selectedDate: selectedDate,
-                        onSelectDate: { 
-                            day in
-                            selectedDate = day
-                            selectedTab = .home
-                        },
+                        selectedDate: Date(),
                         onImportCSV: { url in
                             CSVImportService.importSatisfactionEntries(from: url, into: context)
                         }
                     )
+                    .padding(.vertical, 10)
                 }
                 .tabItem { Label("Calendar", systemImage: "calendar") }
                 .tag(Tab.calendar)
