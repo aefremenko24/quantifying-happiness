@@ -80,8 +80,7 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $showingDayDetails) {
-            SatisfactionEntryView(date: selectedDate.startOfDay, satisfactionEntry: $entry) { newEntry in
-                context.insert(newEntry)
+            SatisfactionEntryView(date: selectedDate.startOfDay, satisfactionEntry: $entry) {
                 try? context.save()
                 loadScores()
             }

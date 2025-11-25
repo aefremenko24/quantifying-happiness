@@ -15,8 +15,9 @@ struct SatisfactionEntryView: View {
     @State var healthStore: HKHealthStore = HKHealthStore()
     @State var metrics: HealthMetrics?
     @State var currentSatisfactionScore: Int?
+    @State var displayError: Bool = false
     
-    let updateEntryModel: (SatisfactionEntry) -> Void
+    let updateEntryModel: () -> Void
     
     @Environment(\.dismiss) private var dismiss
     
@@ -38,8 +39,8 @@ struct SatisfactionEntryView: View {
             }
             
             VStack(alignment: .center) {
-                if (date > Date()) {
-                    Text("No data available for this date yet, come back later")
+                if ((date.startOfDay >= Date().startOfDay) || displayError) {
+                    Text("No data available for this date, come back later")
                 }
                 else if (metrics == nil) {
                     Text("Fetching health data...")
@@ -67,23 +68,27 @@ struct SatisfactionEntryView: View {
             }
         }
         .onAppear {
-            let metricsManager = HealthMetricsManager(healthStore: healthStore)
-            
-            Task {
-                do {
-                    try await metricsManager.requestAuthorization()
-                } catch {
-                    print("Authorization failed: \(error)")
+            if (date.startOfDay < Date().startOfDay) {
+                let metricsManager = HealthMetricsManager(healthStore: healthStore)
+                
+                Task {
+                    do {
+                        try await metricsManager.requestAuthorization()
+                    } catch {
+                        print("Authorization failed: \(error)")
+                        displayError = true
+                    }
                 }
-            }
-            
-            Task {
-                do {
-                    let endOfDay = endOfDay(from: date)
-                    let queryDate = Date() < endOfDay ? Date() : endOfDay
-                    metrics = try await metricsManager.fetchAllMetrics(for: queryDate)
-                } catch {
-                    print("Error fetching metrics: \(error)")
+                
+                Task {
+                    do {
+                        let endOfDay = endOfDay(from: date)
+                        let queryDate = Date() < endOfDay ? Date() : endOfDay
+                        metrics = try await metricsManager.fetchAllMetrics(for: queryDate)
+                    } catch {
+                        print("Error fetching metrics: \(error)")
+                        displayError = true
+                    }
                 }
             }
         }
@@ -96,10 +101,14 @@ struct SatisfactionEntryView: View {
     }
     
     private func updateSatisfactionEntry() {
-        if metrics != nil && satisfactionEntry != nil {
-            let newEntry = SatisfactionEntry(from: metrics!, date: date.startOfDay, satisfactionScore: Double(currentSatisfactionScore!))
-            satisfactionEntry = newEntry
-            updateEntryModel(newEntry)
+        if satisfactionEntry != nil {
+            if metrics != nil {
+                satisfactionEntry!.updateHealthMetrics(metrics!)
+            }
+            if currentSatisfactionScore != nil {
+                satisfactionEntry!.userSatisfactionScore = Double(currentSatisfactionScore!)
+            }
+            updateEntryModel()
         }
     }
     
@@ -114,5 +123,5 @@ struct SatisfactionEntryView: View {
 
 #Preview {
     @Previewable @State var satisfactionEntry: SatisfactionEntry? = SatisfactionEntry(day: Date(), score: nil)
-    SatisfactionEntryView(date: Date(), satisfactionEntry: $satisfactionEntry, updateEntryModel: {_ in })
+    SatisfactionEntryView(date: Date(), satisfactionEntry: $satisfactionEntry, updateEntryModel: {})
 }
