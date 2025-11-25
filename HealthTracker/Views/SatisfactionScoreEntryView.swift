@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SatisfactionScoreEntryView: View {
-    @Binding var satisfactionScore: Int
+    @Binding var satisfactionScore: Int?
     
     private let barWidth: CGFloat = UIScreen.main.bounds.size.width / 10 - 16
     private let barHeight: CGFloat = 80
@@ -17,13 +17,12 @@ struct SatisfactionScoreEntryView: View {
     var body: some View {
         HStack(spacing: 20) {
             Spacer()
-            
             ZStack {
                 GeometryReader { geometry in
                     HStack(spacing: barSpacing) {
                         ForEach(1...10, id: \.self) { index in
                             Rectangle()
-                                .fill(index <= satisfactionScore ? backgroundColor(for: satisfactionScore).opacity(0.8) : Color.secondary)
+                                .fill(satisfactionScore == nil ? Color.secondary : (index <= satisfactionScore! ? backgroundColor(for: satisfactionScore).opacity(0.8) : Color.secondary))
                                 .frame(width: barWidth, height: barHeight)
                                 .cornerRadius(4)
                         }
@@ -43,9 +42,9 @@ struct SatisfactionScoreEntryView: View {
                     Spacer()
                     VStack {
                         Spacer()
-                        Text(String(satisfactionScore))
+                        Text(satisfactionScore == nil ? "?" : String(satisfactionScore!))
                             .font(.largeTitle)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.black)
                             .fontWeight(.black)
                             .frame(width: 50, height: 50)
                             .background(.white, in: Circle())
@@ -90,7 +89,7 @@ struct SatisfactionScoreEntryView: View {
 }
 
 #Preview {
-    @Previewable @State var satisfactionScore = 5
+    @Previewable @State var satisfactionScore: Int? = nil
     
     SatisfactionScoreEntryView(satisfactionScore: $satisfactionScore)
 }

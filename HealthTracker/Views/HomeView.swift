@@ -18,10 +18,10 @@ struct HomeView: View {
                     Text("How happy are you today?")
                         .fontWeight(.bold)
                     SatisfactionScoreEntryView(
-                        satisfactionScore: Binding<Int>(
+                        satisfactionScore: Binding<Int?>(
                             get: { Int(entry.userSatisfactionScore ?? 5) },
                             set: { newVal in
-                                entry.userSatisfactionScore = Double(newVal)
+                                entry.userSatisfactionScore = newVal == nil ? nil : Double(newVal!)
                                 try? context.save()
                             }
                         )
