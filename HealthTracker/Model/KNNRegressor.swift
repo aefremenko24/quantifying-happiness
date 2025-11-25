@@ -24,7 +24,7 @@ private func calculateEuclideanDistance(from point1: [Double], to point2: [Doubl
 }
 
 // Standardizes the data points
-private class FeatureScaler {
+class FeatureScaler {
     private var means: [Double] = []
     private var stdDevs: [Double] = []
     

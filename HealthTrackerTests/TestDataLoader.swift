@@ -48,7 +48,7 @@ func loadTestData(from jsonData: Data) throws -> [SatisfactionEntry] {
     }
 }
 
-func loadTestDataFromFile(named filename: String = "SampleData") throws -> [SatisfactionEntry] {
+func loadTestDataFromFile(named filename: String = "SampleData") throws -> [SatisfactionEntry] {    
     guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
         throw TestDataLoaderError.fileNotFoundError("Could not find \(filename).json in bundle")
     }

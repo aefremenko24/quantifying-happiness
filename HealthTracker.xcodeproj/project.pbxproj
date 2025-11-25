@@ -29,14 +29,38 @@
 		2690824B2EAC2C3C0080F458 /* HealthTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		26A2334D2ED6711C000478A6 /* Exceptions for "HealthTracker" folder in "HealthTrackerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HealthKitDataManager.swift,
+				Schemas/SatisfactionEntry.swift,
+			);
+			target = 269082402EAC2C3C0080F458 /* HealthTrackerTests */;
+		};
+		26A233502ED6A423000478A6 /* Exceptions for "HealthTrackerTests" folder in "HealthTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SampleData.json,
+			);
+			target = 269082312EAC2C3B0080F458 /* HealthTracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		269082342EAC2C3B0080F458 /* HealthTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				26A2334D2ED6711C000478A6 /* Exceptions for "HealthTracker" folder in "HealthTrackerTests" target */,
+			);
 			path = HealthTracker;
 			sourceTree = "<group>";
 		};
 		269082442EAC2C3C0080F458 /* HealthTrackerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				26A233502ED6A423000478A6 /* Exceptions for "HealthTrackerTests" folder in "HealthTracker" target */,
+			);
 			path = HealthTrackerTests;
 			sourceTree = "<group>";
 		};
