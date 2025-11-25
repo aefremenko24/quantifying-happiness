@@ -54,7 +54,9 @@ struct SuggestionsView: View {
     }
     
     func loadSuggestions() async {
-        let descriptor = FetchDescriptor<SatisfactionEntry>()
+        let descriptor = FetchDescriptor<SatisfactionEntry>(
+            predicate: #Predicate { $0.userSatisfactionScore != nil }
+        )
         let fetchedModels: [SatisfactionEntry]
         do {
             fetchedModels = try context.fetch(descriptor)

@@ -77,9 +77,7 @@ class LocalSearchOptimizer {
             
             temperature *= coolingRate
             
-            if iteration % 100 == 0 {
-                print("Iteration \(iteration): Current = \(String(format: "%.4f", currentValue)), Best = \(String(format: "%.4f", bestValue)), Temp = \(String(format: "%.2f", temperature))")
-            }
+            print("Iteration \(iteration): Current = \(String(format: "%.4f", currentValue)), Best = \(String(format: "%.4f", bestValue)), Temp = \(String(format: "%.2f", temperature))")
         }
         
         return (bestParams, history)
