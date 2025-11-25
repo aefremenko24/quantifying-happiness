@@ -52,9 +52,9 @@ final class SatisfactionEntry {
         self.restingHeartRateToday = restingHeartRateToday
     }
     
-    init(fromList list: [Double], satisfactionScore: Double) throws {
+    init?(fromList list: [Double], satisfactionScore: Double) {
         guard list.count == 9 else {
-            throw SatisfactionEntryError.valueError("Invalid parameter count for SatisfactionEntry")
+            return nil
         }
         
         self.day = Date().startOfDay
@@ -83,6 +83,19 @@ final class SatisfactionEntry {
             self.distanceWalkingToday,
             self.flightsClimbedToday,
             self.restingHeartRateToday,
+        ]
+    }
+    
+    static func metricNamesList() -> [String] {
+        return [
+            "Steps taken",
+            "Time in Bed",
+            "Calories Burnt",
+            "Minutes Exercising",
+            "Stand Hours",
+            "Daylight Time",
+            "Distance Walked",
+            "Flights Climbed"
         ]
     }
 }

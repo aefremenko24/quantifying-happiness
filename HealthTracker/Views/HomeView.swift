@@ -26,16 +26,15 @@ struct HomeView: View {
                             }
                         )
                     )
+                    HealthDataView()
+                        .padding(.top, 8)
+                    
+                    SuggestionsView(currentSatisfactionEntry: entry)
+                        .padding(.top, 8)
                 } else {
                     Text("Loading…").foregroundStyle(.secondary)
                 }
             }
-
-            HealthDataView()
-                .padding(.top, 8)
-
-            SuggestionsView()
-                .padding(.top, 8)
 
             Spacer()
 

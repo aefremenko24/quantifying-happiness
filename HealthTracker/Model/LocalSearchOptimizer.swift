@@ -64,7 +64,7 @@ class LocalSearchOptimizer {
             let acceptanceProbability = delta > 0 ? 1.0 : exp(delta / temperature)
             
             if Double.random(in: 0...1) < acceptanceProbability {
-                currentParams = try SatisfactionEntry(fromList: candidateParamsList, satisfactionScore: candidateValue)
+                currentParams = SatisfactionEntry(fromList: candidateParamsList, satisfactionScore: candidateValue) ?? currentParams
                 currentValue = candidateValue
                 
                 history.append(currentParams)
