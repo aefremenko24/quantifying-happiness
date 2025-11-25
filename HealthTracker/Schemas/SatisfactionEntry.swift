@@ -87,6 +87,18 @@ final class SatisfactionEntry {
         self.restingHeartRateToday = healthMetrics.restingHeartRateToday
     }
     
+    func updateHealthMetrics(_ healthMetrics: HealthMetrics) {
+        self.stepsToday = healthMetrics.stepsToday
+        self.timeInBedLastNight = healthMetrics.timeInBedLastNight
+        self.activeEnergyToday = healthMetrics.activeEnergyToday
+        self.exerciseMinutesToday = healthMetrics.exerciseMinutesToday
+        self.standHoursToday = healthMetrics.standHoursToday
+        self.daylightTimeToday = healthMetrics.daylightTimeToday
+        self.distanceWalkingToday = healthMetrics.distanceWalkingToday
+        self.flightsClimbedToday = healthMetrics.flightsClimbedToday
+        self.restingHeartRateToday = healthMetrics.restingHeartRateToday
+    }
+    
     func toList() -> [Double] {
         return [
             self.stepsToday,
