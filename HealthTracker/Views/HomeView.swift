@@ -11,28 +11,28 @@ struct HomeView: View {
     @State private var entry: SatisfactionEntry?
 
     var body: some View {
-        VStack(alignment: .center, spacing: 16) {
-            if let entry {
-                Text("How happy are you today?")
-                    .fontWeight(.bold)
-                SatisfactionScoreEntryView(
-                    satisfactionScore: Binding<Int?>(
-                        get: { Int(entry.userSatisfactionScore ?? 5) },
-                        set: { newVal in
-                            entry.userSatisfactionScore = newVal == nil ? nil : Double(newVal!)
-                            try? context.save()
-                        }
+        ScrollView {
+            VStack(alignment: .center, spacing: 16) {
+                if let entry {
+                    Text("How happy are you today?")
+                        .fontWeight(.bold)
+                    SatisfactionScoreEntryView(
+                        satisfactionScore: Binding<Int?>(
+                            get: { Int(entry.userSatisfactionScore ?? 5) },
+                            set: { newVal in
+                                entry.userSatisfactionScore = newVal == nil ? nil : Double(newVal!)
+                                try? context.save()
+                            }
+                        )
                     )
-                )
-                ScrollView {
                     SuggestionsView(currentSatisfactionEntry: entry)
                         .padding(.top, 8)
+                } else {
+                    Text("Loading...").foregroundStyle(.secondary)
+                    
+                    Spacer()
                 }
-            } else {
-                Text("Loading...").foregroundStyle(.secondary)
             }
-            
-            Spacer()
         }
         .navigationTitle(Date().formatted(
                  Date.FormatStyle().weekday(.wide).day(.twoDigits).month(.abbreviated))
