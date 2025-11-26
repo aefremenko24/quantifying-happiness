@@ -6,6 +6,7 @@
 //
 
 import Foundation
+@testable import HealthTracker
 
 // Custom errors
 private enum TestDataLoaderError: Error {
@@ -26,7 +27,8 @@ func loadTestData(from jsonData: Data) throws -> [SatisfactionEntry] {
     let decoder = JSONDecoder()
     let testData = try decoder.decode(TestData.self, from: jsonData)
     
-    let dateFormatter = ISO8601DateFormatter()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-mm-dd"
     
     return testData.entries.compactMap { entry in
         guard let date = dateFormatter.date(from: entry.date) else {

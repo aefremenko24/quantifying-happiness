@@ -30,14 +30,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		26A2334D2ED6711C000478A6 /* Exceptions for "HealthTracker" folder in "HealthTrackerTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				HealthKitDataManager.swift,
-				Schemas/SatisfactionEntry.swift,
-			);
-			target = 269082402EAC2C3C0080F458 /* HealthTrackerTests */;
-		};
 		26A233502ED6A423000478A6 /* Exceptions for "HealthTrackerTests" folder in "HealthTracker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -50,9 +42,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		269082342EAC2C3B0080F458 /* HealthTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				26A2334D2ED6711C000478A6 /* Exceptions for "HealthTracker" folder in "HealthTrackerTests" target */,
-			);
 			path = HealthTracker;
 			sourceTree = "<group>";
 		};
