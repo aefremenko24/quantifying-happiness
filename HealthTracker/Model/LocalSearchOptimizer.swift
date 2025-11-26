@@ -15,6 +15,7 @@ private enum LocalSearchOptimizerError: Error {
 class LocalSearchOptimizer {
     private let data: [SatisfactionEntry]
     private let regressor: KNNRegressor
+    private let scaler: FeatureScaler
     
     private let initialTemperature: Double
     private let coolingRate: Double
@@ -23,15 +24,19 @@ class LocalSearchOptimizer {
     init(data: [SatisfactionEntry],
          initialTemperature: Double = 100.0,
          coolingRate: Double = 0.95,
-         stepSize: Double = 0.5
+         stepSize: Double = 0.05
     ) {
         self.data = data
         self.initialTemperature = initialTemperature
         self.coolingRate = coolingRate
         self.stepSize = stepSize
-        self.regressor = KNNRegressor()
         
-        self.regressor.fit(self.data)
+        self.scaler = FeatureScaler()
+        self.scaler.fit(data.map { $0.toList() })
+        
+        self.regressor = KNNRegressor(trainingData: data, numNeighbors: 5)
+        self.regressor.fit(scaler: scaler)
+        
     }
     
     func optimize(
@@ -43,21 +48,30 @@ class LocalSearchOptimizer {
             throw LocalSearchOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
         }
         
-        var currentParams = initialParams
+        let transformedParams = try scaler.transform(initialParams.toList())
+        var currentParams = SatisfactionEntry(from: transformedParams, satisfactionScore: initialParams.userSatisfactionScore!)!
         var currentValue = currentParams.userSatisfactionScore!
         var bestParams = currentParams
         var bestValue = currentValue
         var history: [SatisfactionEntry] = [currentParams]
-        
         var temperature = initialTemperature
         
-        print("Starting simulated annealing from satisfaction value: \(String(format: "%.4f", currentValue))")
+        print("Starting simulated annealing with step \(stepSize) from parameters \(currentParams.toList())\n"
+              + "with satisfaction value: \(String(format: "%.4f", currentValue))\n")
         
         for iteration in 0..<maxIterations {
-            var candidateParamsList = currentParams.toList()
-            let dimToChange = Int.random(in: 0..<candidateParamsList.count)
-            candidateParamsList[dimToChange] += Double.random(in: -stepSize...stepSize)
+            print("Iteration \(iteration):\n"
+                  + "Current = \(String(format: "%.4f", currentValue)) for \(currentParams.toList()),\n"
+                  + "Best = \(String(format: "%.4f", bestValue)) for \(bestParams.toList()),\n"
+                  + "Temp = \(String(format: "%.2f", temperature))\n")
             
+            var candidateParamsList = currentParams.toList()
+
+            let dimToChange = Int.random(in: 0..<candidateParamsList.count)
+            let randomStep = Double.random(in: -stepSize...stepSize)
+            
+            candidateParamsList[dimToChange] += randomStep
+                
             let candidateValue = try self.regressor.predictSatisfactionScore(candidateParamsList)
             
             let delta = candidateValue - currentValue
@@ -76,10 +90,15 @@ class LocalSearchOptimizer {
             }
             
             temperature *= coolingRate
-            
-            print("Iteration \(iteration): Current = \(String(format: "%.4f", currentValue)), Best = \(String(format: "%.4f", bestValue)), Temp = \(String(format: "%.2f", temperature))")
         }
         
-        return (bestParams, history)
+        let finalBestParams = SatisfactionEntry(from: try scaler.inverseTransform(bestParams.toList()), satisfactionScore: bestValue) ?? bestParams
+        return (finalBestParams, history)
+    }
+}
+
+extension Comparable {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
