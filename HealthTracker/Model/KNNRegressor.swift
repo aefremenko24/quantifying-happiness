@@ -23,75 +23,49 @@ private func calculateEuclideanDistance(from point1: [Double], to point2: [Doubl
     return sqrt(squaredDiffs.reduce(0, +))
 }
 
-// Standardizes the data points
-class FeatureScaler {
-    private var means: [Double] = []
-    private var stdDevs: [Double] = []
-    
-    // Calculate means and standard deviations
-    func fit(_ data: [[Double]]) {
-        guard !data.isEmpty else {
-            return
-        }
-        
-        let numFeatures = data[0].count
-        means = Array(repeating: 0.0, count: numFeatures)
-        stdDevs = Array(repeating: 0.0, count: numFeatures)
-        
-        for featureIdx in 0..<numFeatures {
-            let featureValues = data.map { $0[featureIdx] }
-            
-            means[featureIdx] = featureValues.reduce(0, +) / Double(featureValues.count)
-            
-            let squaredDiffs = featureValues.map { pow($0 - means[featureIdx], 2) }
-            stdDevs[featureIdx] = sqrt(squaredDiffs.reduce(0, +) / Double(featureValues.count))
-        }
-    }
-    
-    // Apply the standardization formula to each data point
-    func transform(_ features: [Double]) -> [Double] {
-        return zip(features, zip(means, stdDevs)).map { feature, stats in
-            let (mean, std) = stats
-            return std > 0 ? (feature - mean) / std : 0
-        }
-    }
-}
-
 // Allows us to make predictions for the satisfaction score for unseen metrics combinations
 class KNNRegressor {
     private var trainingData: [SatisfactionEntry] = []
     private let numNeighbors: Int
-    private let scaler: FeatureScaler
+    private var isFitted: Bool = false
     
-    init(trainingData: [SatisfactionEntry] = [], numNeighbors: Int = 5) {
+    init(trainingData: [SatisfactionEntry], numNeighbors: Int) {
         self.trainingData = trainingData
         self.numNeighbors = numNeighbors
-        self.scaler = FeatureScaler()
     }
     
-    func fit(_ data: [SatisfactionEntry]) {
-        self.trainingData = data
-        
-        let features = data.map { $0.toList() }
-        scaler.fit(features)
+    func fit(scaler: FeatureScaler) {
+        do {
+            var transformedTrainingData: [SatisfactionEntry] = []
+            for entry in trainingData {
+                let transformedEntry = try scaler.transform(entry.toList())
+                transformedTrainingData.append(
+                    SatisfactionEntry(from: transformedEntry, satisfactionScore: entry.userSatisfactionScore)!
+                )
+            }
+            self.trainingData = transformedTrainingData
+            self.isFitted = true
+        } catch {
+            print("Failed to fit KNN Regressor: \(error)")
+        }
     }
     
     // Get satisfaction score for a given set of metrics
     func predictSatisfactionScore(_ features: [Double]) throws -> Double {
         guard !trainingData.isEmpty else {
-            throw KNNRegressorError.unfittedModelError("Model must be fitted before prediction")
+            throw KNNRegressorError.unfittedModelError("Model cannot run without training data")
         }
         
-        // Scale the query features
-        let scaledQuery = scaler.transform(features)
+        guard isFitted else {
+            throw KNNRegressorError.unfittedModelError("Regressor must be fitted before making predicitons. Call fit() first.")
+        }
         
         // Calculate distances to all training points
         var distances: [(distance: Double, satisfaction: Double)] = []
         
         for dataPoint in trainingData {
             if dataPoint.userSatisfactionScore != nil {
-                let scaledFeatures = scaler.transform(dataPoint.toList())
-                let distance = try calculateEuclideanDistance(from: scaledQuery, to: scaledFeatures)
+                let distance = try calculateEuclideanDistance(from: features, to: dataPoint.toList())
                 distances.append((distance, dataPoint.userSatisfactionScore!))
             }
         }
