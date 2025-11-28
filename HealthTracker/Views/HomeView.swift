@@ -9,6 +9,7 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var context
     @State private var entry: SatisfactionEntry?
+    @State private var lastValidEntry: SatisfactionEntry?
 
     var body: some View {
         ScrollView {
@@ -25,8 +26,12 @@ struct HomeView: View {
                             }
                         )
                     )
-                    SuggestionsView(currentSatisfactionEntry: entry)
-                        .padding(.top, 8)
+                    if let lastValidEntry {
+                        SuggestionsView(currentSatisfactionEntry: lastValidEntry)
+                            .padding(.top, 8)
+                    } else {
+                        Text("Loading suggestions...").foregroundStyle(.secondary)
+                    }
                 } else {
                     Text("Loading...").foregroundStyle(.secondary)
                     
@@ -37,7 +42,10 @@ struct HomeView: View {
         .navigationTitle(Date().formatted(
                  Date.FormatStyle().weekday(.wide).day(.twoDigits).month(.abbreviated))
         )
-        .onAppear { ensureEntry() }
+        .onAppear {
+            ensureEntry()
+            fetchLastValidEntry()
+        }
     }
 
 
@@ -58,6 +66,18 @@ struct HomeView: View {
             context.insert(newEntry)
             try? context.save()
             entry = newEntry
+        }
+    }
+    
+    private func fetchLastValidEntry() {
+        let descriptor = FetchDescriptor<SatisfactionEntry>(
+            predicate: #Predicate { $0.userSatisfactionScore != nil },
+            sortBy: [ SortDescriptor(\SatisfactionEntry.day, order: .forward) ]
+        )
+        if let validEntry = try? context.fetch(descriptor).dropLast().last {
+            lastValidEntry = validEntry
+        } else {
+            lastValidEntry = self.entry
         }
     }
 }

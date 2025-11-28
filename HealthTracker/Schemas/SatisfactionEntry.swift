@@ -52,7 +52,7 @@ final class SatisfactionEntry {
         self.restingHeartRateToday = restingHeartRateToday
     }
     
-    init?(from list: [Double], satisfactionScore: Double) {
+    init?(from list: [Double], satisfactionScore: Double?) {
         guard list.count == 9 else {
             return nil
         }
@@ -72,7 +72,7 @@ final class SatisfactionEntry {
         
     }
     
-    init(from healthMetrics: HealthMetrics, date: Date, satisfactionScore: Double) {
+    init(from healthMetrics: HealthMetrics, date: Date, satisfactionScore: Double?) {
         self.day = date
         self.userSatisfactionScore = satisfactionScore
         

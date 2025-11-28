@@ -64,9 +64,14 @@ struct SuggestionsView: View {
             print("Could not fetch SatisfactionEntries: \(error)")
             return
         }
-        let optimizer = LocalSearchOptimizer(data: fetchedModels)
+        let optimizer = LocalSearchOptimizer(
+            data: fetchedModels,
+            initialTemperature: 100.0,
+            coolingRate: 0.95,
+            stepSize: 0.25
+        )
         do {
-            let optimizerOutput = try optimizer.optimize(initialParams: currentSatisfactionEntry, maxIterations: 50)
+            let optimizerOutput = try optimizer.optimize(initialParams: currentSatisfactionEntry, maxIterations: 500)
             self.suggestedSatisfactionEntry = optimizerOutput.value
         } catch {
             print("Optimization failed: \(error)")
