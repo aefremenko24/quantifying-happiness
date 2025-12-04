@@ -7,11 +7,12 @@
 
 import Foundation
 
-// Custom errors
+/// Custom errors
 private enum SimulatedAnnealingOptimizerError: Error {
     case valueError(String)
 }
 
+/// Simulated Annealing model used to optimize health metrics.
 class SimulatedAnnealingOptimizer {
     private let data: [SatisfactionEntry]
     private let regressor: KNNRegressor
@@ -42,6 +43,22 @@ class SimulatedAnnealingOptimizer {
         }
     }
     
+    /// Find an optimal combination of health metrics using simulated annealing.
+    ///
+    /// The algorithm works with parameters normalized using the feature scaler and returns
+    /// the solution transformed back to the original scale.
+    ///
+    /// - Parameters:
+    ///   - initialParams: Starting point for optimization containing the initial metrics and a satisfaction score.
+    ///   - maxIterations: Maximum number of optimization iterations.
+    /// - Returns: A tuple containing:
+    ///   - `value`: The best `SatisfactionEntry` found during optimization (in original scale).
+    ///   - `history`: A list of all accepted `SatisfactionEntry` states during the optimization.
+    /// - Throws:
+    ///   - `SimulatedAnnealingOptimizerError.valueError` if the initial parameters are missing a satisfaction score.
+    ///   - Errors from `scaler.transform()` if feature transformation fails.
+    ///   - Errors from `regressor.predictSatisfactionScore()` if prediction fails.
+    ///   - Errors from `scaler.inverseTransform()` if inverse transformation of the final result fails.
     func optimize(
         initialParams: SatisfactionEntry,
         maxIterations: Int
