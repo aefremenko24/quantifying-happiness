@@ -53,11 +53,6 @@
 			path = HealthTrackerTests;
 			sourceTree = "<group>";
 		};
-		2690824E2EAC2C3C0080F458 /* HealthTrackerUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = HealthTrackerUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +85,6 @@
 			children = (
 				269082342EAC2C3B0080F458 /* HealthTracker */,
 				269082442EAC2C3C0080F458 /* HealthTrackerTests */,
-				2690824E2EAC2C3C0080F458 /* HealthTrackerUITests */,
 				269082332EAC2C3B0080F458 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,9 +159,6 @@
 			);
 			dependencies = (
 				2690824D2EAC2C3C0080F458 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				2690824E2EAC2C3C0080F458 /* HealthTrackerUITests */,
 			);
 			name = HealthTrackerUITests;
 			packageProductDependencies = (
