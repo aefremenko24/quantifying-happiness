@@ -7,19 +7,26 @@
 
 import Foundation
 
-// Custom errors
+/// Custom errors
 private enum FeatureScalerErrors: Error {
     case valueError(String)
     case unfittedModelError(String)
 }
 
-// Normalizes data points
+/// Normalizes data points for use with KNN Regressor and Simulated Annealing
 class FeatureScaler {
     private var mins: [Double] = []
     private var maxs: [Double] = []
     private var isFitted: Bool = false
     
-    // Calculate means and standard deviations
+    /// Extract essential parameters from the given set of data.
+    ///
+    /// Before the feature scaler can apply normalization to arbitrary data points,
+    /// it needs to calculate and store the minimum and the maximum values of
+    /// the whole training data set.git
+    ///
+    /// - Parameters:
+    ///   - data: A list of training data points, each containing the same number of health metrics.
     func fit(_ data: [[Double]]) {
         guard !data.isEmpty else {
             return
@@ -39,7 +46,16 @@ class FeatureScaler {
         isFitted = true
     }
     
-    // Normalize each data point
+    /// Normalize the given data point.
+    ///
+    /// - Parameters:
+    ///   - features: Data point as a list of health metrics.
+    ///
+    /// - Returns: Data point after normalization with respect to the fitted data.
+    ///
+    /// - Throws:
+    ///   - `FeatureScalerErrors.unfittedModelError` if the scaler has not been fit to any training data.
+    ///   - `FeatureScalerErrors.valueError` if the dimension of the data point does not match the dimension of the previously fit data.
     func transform(_ features: [Double]) throws -> [Double] {
         guard isFitted else {
             throw FeatureScalerErrors.unfittedModelError("Scaler must be fitted before inverse transformation. Call fit() first.")
@@ -55,7 +71,16 @@ class FeatureScaler {
         }
     }
     
-    // Reverse normalization for each data point
+    /// Reverse normalization for the given data point.
+    ///
+    /// - Parameters:
+    ///   - features: Data point as a list of health metrics.
+    ///
+    /// - Returns: Data point after reverse normalization with respect to the fitted data.
+    ///
+    /// - Throws:
+    ///   - `FeatureScalerErrors.unfittedModelError` if the scaler has not been fit to any training data.
+    ///   - `FeatureScalerErrors.valueError` if the dimension of the data point does not match the dimension of the previously fit data.
     func inverseTransform(_ scaledFeatures: [Double]) throws -> [Double] {
         guard isFitted else {
             throw FeatureScalerErrors.unfittedModelError("Scaler must be fitted before inverse transformation. Call fit() first.")

@@ -1,5 +1,5 @@
 //
-//  LocalSearchOptimizer.swift
+//  SimulatedAnnealingOptimizer.swift
 //  HealthTracker
 //
 //  Created by Arthur Efremenko on 11/24/25.
@@ -7,12 +7,13 @@
 
 import Foundation
 
-// Custom errors
-private enum LocalSearchOptimizerError: Error {
+/// Custom errors
+private enum SimulatedAnnealingOptimizerError: Error {
     case valueError(String)
 }
 
-class LocalSearchOptimizer {
+/// Simulated Annealing model used to optimize health metrics.
+class SimulatedAnnealingOptimizer {
     private let data: [SatisfactionEntry]
     private let regressor: KNNRegressor
     private let scaler: FeatureScaler
@@ -35,17 +36,36 @@ class LocalSearchOptimizer {
         self.scaler.fit(data.map { $0.toList() })
         
         self.regressor = KNNRegressor(trainingData: data, numNeighbors: 5)
-        self.regressor.fit(scaler: scaler)
-        
+        do {
+            try self.regressor.fit(scaler: scaler)
+        } catch {
+            print("Error when fitting the KNN regressor: \(error)")
+        }
     }
     
+    /// Find an optimal combination of health metrics using simulated annealing.
+    ///
+    /// The algorithm works with parameters normalized using the feature scaler and returns
+    /// the solution transformed back to the original scale.
+    ///
+    /// - Parameters:
+    ///   - initialParams: Starting point for optimization containing the initial metrics and a satisfaction score.
+    ///   - maxIterations: Maximum number of optimization iterations.
+    /// - Returns: A tuple containing:
+    ///   - `value`: The best `SatisfactionEntry` found during optimization (in original scale).
+    ///   - `history`: A list of all accepted `SatisfactionEntry` states during the optimization.
+    /// - Throws:
+    ///   - `SimulatedAnnealingOptimizerError.valueError` if the initial parameters are missing a satisfaction score.
+    ///   - Errors from `scaler.transform()` if feature transformation fails.
+    ///   - Errors from `regressor.predictSatisfactionScore()` if prediction fails.
+    ///   - Errors from `scaler.inverseTransform()` if inverse transformation of the final result fails.
     func optimize(
         initialParams: SatisfactionEntry,
         maxIterations: Int
     ) throws -> (value: SatisfactionEntry, history: [SatisfactionEntry]) {
         
         guard initialParams.userSatisfactionScore != nil else {
-            throw LocalSearchOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
+            throw SimulatedAnnealingOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
         }
         
         let transformedParams = try scaler.transform(initialParams.toList())
@@ -94,11 +114,5 @@ class LocalSearchOptimizer {
         
         let finalBestParams = SatisfactionEntry(from: try scaler.inverseTransform(bestParams.toList()), satisfactionScore: bestValue) ?? bestParams
         return (finalBestParams, history)
-    }
-}
-
-extension Comparable {
-    func clamped(to limits: ClosedRange<Self>) -> Self {
-        return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }

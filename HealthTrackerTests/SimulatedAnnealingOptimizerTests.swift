@@ -1,6 +1,6 @@
 //
-//  LocalSearchOptimizerTests.swift
-//  LocalSearchOptimizerTests
+//  SimulatedAnnealingOptimizerTests.swift
+//  SimulatedAnnealingOptimizerTests
 //
 //  Created by Arthur Efremenko on 11/25/25.
 //
@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import HealthTracker
 
-struct LocalSearchOptimizerTests {
+struct SimulatedAnnealingOptimizerTests {
     let data: [SatisfactionEntry]
     
     init() {
@@ -29,7 +29,7 @@ struct LocalSearchOptimizerTests {
             satisfactionScore: initialSatisfaction
         )!
         
-        let optimizer = LocalSearchOptimizer(
+        let optimizer = SimulatedAnnealingOptimizer(
             data: data,
             initialTemperature: 100.0,
             coolingRate: 0.95,
@@ -76,7 +76,7 @@ struct LocalSearchOptimizerTests {
             satisfactionScore: initialSatisfaction
         )!
         
-        let optimizer = LocalSearchOptimizer(
+        let optimizer = SimulatedAnnealingOptimizer(
             data: data,
             initialTemperature: 100.0,
             coolingRate: 0.95,
@@ -124,7 +124,7 @@ struct LocalSearchOptimizerTests {
             restingHeartRateToday: metrics[8]
         )
         
-        let optimizer = await LocalSearchOptimizer(data: data)
+        let optimizer = await SimulatedAnnealingOptimizer(data: data)
         
         #expect(throws: Error.self) {
             try optimizer.optimize(
