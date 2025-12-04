@@ -34,7 +34,7 @@ class KNNRegressor {
         self.numNeighbors = numNeighbors
     }
     
-    func fit(scaler: FeatureScaler) {
+    func fit(scaler: FeatureScaler) throws {
         do {
             var transformedTrainingData: [SatisfactionEntry] = []
             for entry in trainingData {
@@ -46,7 +46,7 @@ class KNNRegressor {
             self.trainingData = transformedTrainingData
             self.isFitted = true
         } catch {
-            print("Failed to fit KNN Regressor: \(error)")
+            throw KNNRegressorError.fittingError("Failed to fit KNN Regressor: \(error)")
         }
     }
     

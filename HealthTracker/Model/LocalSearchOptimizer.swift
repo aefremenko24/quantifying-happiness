@@ -35,8 +35,11 @@ class LocalSearchOptimizer {
         self.scaler.fit(data.map { $0.toList() })
         
         self.regressor = KNNRegressor(trainingData: data, numNeighbors: 5)
-        self.regressor.fit(scaler: scaler)
-        
+        do {
+            try self.regressor.fit(scaler: scaler)
+        } catch {
+            print("Error when fitting the KNN regressor: \(error)")
+        }
     }
     
     func optimize(
