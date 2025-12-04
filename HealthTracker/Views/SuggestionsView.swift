@@ -64,7 +64,7 @@ struct SuggestionsView: View {
             print("Could not fetch SatisfactionEntries: \(error)")
             return
         }
-        let optimizer = LocalSearchOptimizer(
+        let optimizer = SimulatedAnnealingOptimizer(
             data: fetchedModels,
             initialTemperature: 100.0,
             coolingRate: 0.95,

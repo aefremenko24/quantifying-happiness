@@ -1,5 +1,5 @@
 //
-//  LocalSearchOptimizer.swift
+//  SimulatedAnnealingOptimizer.swift
 //  HealthTracker
 //
 //  Created by Arthur Efremenko on 11/24/25.
@@ -8,11 +8,11 @@
 import Foundation
 
 // Custom errors
-private enum LocalSearchOptimizerError: Error {
+private enum SimulatedAnnealingOptimizerError: Error {
     case valueError(String)
 }
 
-class LocalSearchOptimizer {
+class SimulatedAnnealingOptimizer {
     private let data: [SatisfactionEntry]
     private let regressor: KNNRegressor
     private let scaler: FeatureScaler
@@ -48,7 +48,7 @@ class LocalSearchOptimizer {
     ) throws -> (value: SatisfactionEntry, history: [SatisfactionEntry]) {
         
         guard initialParams.userSatisfactionScore != nil else {
-            throw LocalSearchOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
+            throw SimulatedAnnealingOptimizerError.valueError("Satisfaction score must be present in the initial parameters")
         }
         
         let transformedParams = try scaler.transform(initialParams.toList())
