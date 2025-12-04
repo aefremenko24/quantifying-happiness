@@ -14,19 +14,12 @@
 			remoteGlobalIDString = 269082312EAC2C3B0080F458;
 			remoteInfo = HealthTracker;
 		};
-		2690824C2EAC2C3C0080F458 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2690822A2EAC2C3B0080F458 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 269082312EAC2C3B0080F458;
-			remoteInfo = HealthTracker;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		269082322EAC2C3B0080F458 /* HealthTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HealthTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		269082412EAC2C3C0080F458 /* HealthTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2690824B2EAC2C3C0080F458 /* HealthTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		26E9954C2EE221B200267799 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -37,11 +30,28 @@
 			);
 			target = 269082312EAC2C3B0080F458 /* HealthTracker */;
 		};
+		26E995802EE22D4600267799 /* Exceptions for "HealthTracker" folder in "HealthTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Services/README.md,
+			);
+			target = 269082312EAC2C3B0080F458 /* HealthTracker */;
+		};
+		26E995812EE22D4F00267799 /* Exceptions for "HealthTrackerTests" folder in "HealthTrackerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				README.md,
+			);
+			target = 269082402EAC2C3C0080F458 /* HealthTrackerTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		269082342EAC2C3B0080F458 /* HealthTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				26E995802EE22D4600267799 /* Exceptions for "HealthTracker" folder in "HealthTracker" target */,
+			);
 			path = HealthTracker;
 			sourceTree = "<group>";
 		};
@@ -49,6 +59,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				26A233502ED6A423000478A6 /* Exceptions for "HealthTrackerTests" folder in "HealthTracker" target */,
+				26E995812EE22D4F00267799 /* Exceptions for "HealthTrackerTests" folder in "HealthTrackerTests" target */,
 			);
 			path = HealthTrackerTests;
 			sourceTree = "<group>";
@@ -70,19 +81,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		269082482EAC2C3C0080F458 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		269082292EAC2C3B0080F458 = {
 			isa = PBXGroup;
 			children = (
+				26E9954C2EE221B200267799 /* README.md */,
 				269082342EAC2C3B0080F458 /* HealthTracker */,
 				269082442EAC2C3C0080F458 /* HealthTrackerTests */,
 				269082332EAC2C3B0080F458 /* Products */,
@@ -94,7 +99,6 @@
 			children = (
 				269082322EAC2C3B0080F458 /* HealthTracker.app */,
 				269082412EAC2C3C0080F458 /* HealthTrackerTests.xctest */,
-				2690824B2EAC2C3C0080F458 /* HealthTrackerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -147,26 +151,6 @@
 			productReference = 269082412EAC2C3C0080F458 /* HealthTrackerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		2690824A2EAC2C3C0080F458 /* HealthTrackerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2690825B2EAC2C3C0080F458 /* Build configuration list for PBXNativeTarget "HealthTrackerUITests" */;
-			buildPhases = (
-				269082472EAC2C3C0080F458 /* Sources */,
-				269082482EAC2C3C0080F458 /* Frameworks */,
-				269082492EAC2C3C0080F458 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2690824D2EAC2C3C0080F458 /* PBXTargetDependency */,
-			);
-			name = HealthTrackerUITests;
-			packageProductDependencies = (
-			);
-			productName = HealthTrackerUITests;
-			productReference = 2690824B2EAC2C3C0080F458 /* HealthTrackerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -181,10 +165,6 @@
 						CreatedOnToolsVersion = 26.0;
 					};
 					269082402EAC2C3C0080F458 = {
-						CreatedOnToolsVersion = 26.0;
-						TestTargetID = 269082312EAC2C3B0080F458;
-					};
-					2690824A2EAC2C3C0080F458 = {
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = 269082312EAC2C3B0080F458;
 					};
@@ -206,7 +186,6 @@
 			targets = (
 				269082312EAC2C3B0080F458 /* HealthTracker */,
 				269082402EAC2C3C0080F458 /* HealthTrackerTests */,
-				2690824A2EAC2C3C0080F458 /* HealthTrackerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -220,13 +199,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2690823F2EAC2C3C0080F458 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		269082492EAC2C3C0080F458 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -250,13 +222,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		269082472EAC2C3C0080F458 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -264,11 +229,6 @@
 			isa = PBXTargetDependency;
 			target = 269082312EAC2C3B0080F458 /* HealthTracker */;
 			targetProxy = 269082422EAC2C3C0080F458 /* PBXContainerItemProxy */;
-		};
-		2690824D2EAC2C3C0080F458 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 269082312EAC2C3B0080F458 /* HealthTracker */;
-			targetProxy = 2690824C2EAC2C3C0080F458 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -512,46 +472,6 @@
 			};
 			name = Release;
 		};
-		2690825C2EAC2C3C0080F458 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2R48S3Q5D4;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = aefremenko.HealthTrackerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = HealthTracker;
-			};
-			name = Debug;
-		};
-		2690825D2EAC2C3C0080F458 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2R48S3Q5D4;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = aefremenko.HealthTrackerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = HealthTracker;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -578,15 +498,6 @@
 			buildConfigurations = (
 				269082592EAC2C3C0080F458 /* Debug */,
 				2690825A2EAC2C3C0080F458 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2690825B2EAC2C3C0080F458 /* Build configuration list for PBXNativeTarget "HealthTrackerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2690825C2EAC2C3C0080F458 /* Debug */,
-				2690825D2EAC2C3C0080F458 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
