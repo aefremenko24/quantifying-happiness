@@ -26,7 +26,7 @@ struct KNNRegressorTests {
         self.scaler.fit(trainingData.map({ $0.toList() }))
         
         let regressor = KNNRegressor(trainingData: trainingData, numNeighbors: 3)
-        regressor.fit(scaler: self.scaler)
+        try regressor.fit(scaler: self.scaler)
         
         var highActivityMetrics = [11000.0, 8.2, 1100.0, 65.0, 13.0, 8.5, 8500.0, 22.0, 59.0]
         highActivityMetrics = try scaler.transform(highActivityMetrics)
@@ -63,7 +63,7 @@ struct KNNRegressorTests {
         self.scaler.fit(trainingData.map({ $0.toList() }))
         
         let regressor =  KNNRegressor(trainingData: trainingData, numNeighbors: 3)
-        regressor.fit(scaler: scaler)
+        try regressor.fit(scaler: scaler)
         
         var nearFirstPoint = [10050.0, 8.0, 1005.0, 60.0, 12.0, 8.0, 8050.0, 20.0, 60.0]
         nearFirstPoint = try scaler.transform(nearFirstPoint)

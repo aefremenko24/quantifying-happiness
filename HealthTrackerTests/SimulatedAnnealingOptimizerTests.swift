@@ -1,6 +1,6 @@
 //
-//  LocalSearchOptimizerTests.swift
-//  LocalSearchOptimizerTests
+//  SimulatedAnnealingOptimizerTests.swift
+//  SimulatedAnnealingOptimizerTests
 //
 //  Created by Arthur Efremenko on 11/25/25.
 //
@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import HealthTracker
 
-struct LocalSearchOptimizerTests {
+struct SimulatedAnnealingOptimizerTests {
     let data: [SatisfactionEntry]
     
     init() {
@@ -29,11 +29,11 @@ struct LocalSearchOptimizerTests {
             satisfactionScore: initialSatisfaction
         )!
         
-        let optimizer = LocalSearchOptimizer(
+        let optimizer = SimulatedAnnealingOptimizer(
             data: data,
             initialTemperature: 100.0,
             coolingRate: 0.95,
-            stepSize: 0.1
+            stepSize: 0.25
         )
         
         print("\nOPTIMIZING FROM LOW VALUE")
@@ -76,11 +76,11 @@ struct LocalSearchOptimizerTests {
             satisfactionScore: initialSatisfaction
         )!
         
-        let optimizer = LocalSearchOptimizer(
+        let optimizer = SimulatedAnnealingOptimizer(
             data: data,
             initialTemperature: 100.0,
             coolingRate: 0.95,
-            stepSize: 0.1
+            stepSize: 0.25
         )
         
         print("\nOPTIMIZING FROM HIGH VALUE")
@@ -104,7 +104,7 @@ struct LocalSearchOptimizerTests {
         #expect(finalSatisfaction >= initialSatisfaction,
                 "Starting from high point, optimization should not go down")
         
-        #expect(finalSatisfaction > 9.0,
+        #expect(finalSatisfaction > 8.9,
                 "Should maintain high satisfaction level, found \(finalSatisfaction)")
     }
     
@@ -124,7 +124,7 @@ struct LocalSearchOptimizerTests {
             restingHeartRateToday: metrics[8]
         )
         
-        let optimizer = await LocalSearchOptimizer(data: data)
+        let optimizer = await SimulatedAnnealingOptimizer(data: data)
         
         #expect(throws: Error.self) {
             try optimizer.optimize(

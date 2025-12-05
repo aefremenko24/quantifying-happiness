@@ -10,6 +10,7 @@ import HealthKit
 
 // MARK: - Health Metric Types
 
+/// Metrics considered in the optimization process.
 enum HealthMetricType {
     case steps
     case timeInBed
@@ -21,6 +22,7 @@ enum HealthMetricType {
     case flightsClimbed
     case restingHeartRate
     
+    /// Quantity types corresponding to each metric for use in querying.
     var quantityType: HKQuantityType? {
         switch self {
             case .steps:
@@ -44,6 +46,7 @@ enum HealthMetricType {
         }
     }
     
+    /// Units corresponding to each metric for use in querying.
     var unit: HKUnit {
         switch self {
             case .steps, .flightsClimbed:
@@ -62,6 +65,7 @@ enum HealthMetricType {
 
 // MARK: - Health Metrics Result
 
+/// Stores health metrics used for optimization.
 struct HealthMetrics: Equatable {
     let stepsToday: Double
     let timeInBedLastNight: Double // minutes
@@ -75,7 +79,6 @@ struct HealthMetrics: Equatable {
     
     // Activity Ring Progress (0.0 to 1.0+)
     var moveRingProgress: Double {
-        // Assuming a 500 kcal goal; ideally fetch from HKActivitySummary
         activeEnergyToday / 500.0
     }
     
@@ -90,6 +93,7 @@ struct HealthMetrics: Equatable {
 
 // MARK: - Health Metrics Manager
 
+/// Fetches health metrics from HealthKit.
 class HealthMetricsManager {
     private let healthStore: HKHealthStore
     
@@ -99,6 +103,7 @@ class HealthMetricsManager {
     
     // MARK: - Public API
     
+    /// Fetches values for all metrics from the HealthKit storage.git
     func fetchAllMetrics(for date: Date) async throws -> HealthMetrics {
         async let steps = fetchMetricForDay(for: date, metricType: .steps)
         async let timeInBed = fetchTimeInBed(for: date)
@@ -310,6 +315,7 @@ class HealthMetricsManager {
 
 // MARK: - Error Handling
 
+/// Custom errors
 enum HealthMetricsError: LocalizedError {
     case invalidMetricType
     case authorizationDenied

@@ -7,13 +7,23 @@
 
 import Foundation
 
-// Custom errors
+/// Custom errors
 private enum KNNRegressorError: Error {
     case valueError(String)
+    case fittingError(String)
     case unfittedModelError(String)
 }
 
-// Euclidean distance between two points in n dimensions
+/// Calculate the euclidean distance between two points in n dimensions.
+///
+/// The euclidian distance between some points p1 and p2 in n dimensions is given by:
+///     `\sqrt{\sum_{i=1}^{n} (p1_i - p2_i)^2}`
+///
+/// - Parameters:
+///   - point1: An ordered list of coordinates for each dimension of the first point.
+///   - point2: An ordered list of coordinates for each dimension of the second point.
+/// - Returns: Euclidian distance between the two points.
+/// - Throws: `KNNRegressorError.valueError` if the given points have different dimensions.
 private func calculateEuclideanDistance(from point1: [Double], to point2: [Double]) throws -> Double {
     guard point1.count == point2.count else {
         throw KNNRegressorError.valueError("Feature dimensions must match")
@@ -23,7 +33,7 @@ private func calculateEuclideanDistance(from point1: [Double], to point2: [Doubl
     return sqrt(squaredDiffs.reduce(0, +))
 }
 
-// Allows us to make predictions for the satisfaction score for unseen metrics combinations
+/// Allows us to make predictions for the satisfaction score for unseen metrics combinations
 class KNNRegressor {
     private var trainingData: [SatisfactionEntry] = []
     private let numNeighbors: Int
@@ -34,7 +44,12 @@ class KNNRegressor {
         self.numNeighbors = numNeighbors
     }
     
-    func fit(scaler: FeatureScaler) {
+    /// Given a feature scaler, normalize all data points in the training data.
+    ///
+    /// - Parameters:
+    ///   - scaler: A fitted feature scaler that is able to perform normalization.
+    /// - Throws:`KNNRegressorError.fittingError` if the scaler failed to transform the data.
+    func fit(scaler: FeatureScaler) throws {
         do {
             var transformedTrainingData: [SatisfactionEntry] = []
             for entry in trainingData {
@@ -46,11 +61,22 @@ class KNNRegressor {
             self.trainingData = transformedTrainingData
             self.isFitted = true
         } catch {
-            print("Failed to fit KNN Regressor: \(error)")
+            throw KNNRegressorError.fittingError("Failed to fit KNN Regressor: \(error)")
         }
     }
     
-    // Get satisfaction score for a given set of metrics
+    /// Get the predicted satisfaction score for a given set of metrics.
+    ///
+    /// The value is predicted using a k-Nearest-Neighbors algorithm.
+    /// It works by finding the 'k' closest data points in the training data and assigning
+    /// the given point the weighted average of the satisfaction scores of those neighbors.
+    ///
+    /// - Parameters:
+    ///   - features: Data point as an ordered list of its coordinates.
+    /// - Returns: Predicted satisfaction score.
+    /// - Throws:
+    ///   - `KNNRegressorError.unfittedModelError` if there is no training data or the regressor has not been fitted.
+    ///   - Errors from `calculateEuclideanDistance()` if distance calculations fail.
     func predictSatisfactionScore(_ features: [Double]) throws -> Double {
         guard !trainingData.isEmpty else {
             throw KNNRegressorError.unfittedModelError("Model cannot run without training data")
@@ -76,7 +102,16 @@ class KNNRegressor {
         return weightedAverage(kNearest)
     }
     
-    // Inverse distance weighting with epsilon to avoid division by zero
+    /// Calculate the weighted average of the satisfaction score of 'k' given neighbors.
+    ///
+    /// The weight of each neighbor's contribution is inversely proportional to its distance.
+    /// A small epsilon value is added to every distance to avoid division by zero.
+    ///
+    /// - Parameters:
+    ///   - neighbors: List of neighboring points, each being a tuple of two values:
+    ///     - `distance`: Euclidean distance to the new data point.
+    ///     - `satisfaction`: True satisfaction score of the neighbor.
+    /// - Returns: Weighted average of the satisfaction scores of the given neighbors.
     private func weightedAverage(_ neighbors: [(distance: Double, satisfaction: Double)]) -> Double {
         let epsilon = 1e-8
         
