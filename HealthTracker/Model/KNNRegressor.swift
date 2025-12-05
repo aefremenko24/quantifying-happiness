@@ -87,19 +87,19 @@ class KNNRegressor {
         }
         
         // Calculate distances to all training points
-        var distances: [(distance: Double, satisfaction: Double)] = []
-        
+        var neighbors: [(distance: Double, entry: SatisfactionEntry)] = []
+
         for dataPoint in trainingData {
-            if dataPoint.userSatisfactionScore != nil {
+            if let score = dataPoint.userSatisfactionScore {
                 let distance = try calculateEuclideanDistance(from: features, to: dataPoint.toList())
-                distances.append((distance, dataPoint.userSatisfactionScore!))
+                neighbors.append((distance: distance, entry: dataPoint))
             }
         }
-        
-        distances.sort { $0.distance < $1.distance }
-        let kNearest = Array(distances.prefix(numNeighbors))
-        
-        return weightedAverage(kNearest)
+
+        neighbors.sort { $0.distance < $1.distance }
+        let kNearest = Array(neighbors.prefix(numNeighbors))
+
+    return weightedAverage(kNearest)
     }
     
     /// Calculate the weighted average of the satisfaction score of 'k' given neighbors.
@@ -112,18 +112,31 @@ class KNNRegressor {
     ///     - `distance`: Euclidean distance to the new data point.
     ///     - `satisfaction`: True satisfaction score of the neighbor.
     /// - Returns: Weighted average of the satisfaction scores of the given neighbors.
-    private func weightedAverage(_ neighbors: [(distance: Double, satisfaction: Double)]) -> Double {
+    private func weightedAverage(_ neighbors: [(distance: Double, entry: SatisfactionEntry)]) -> Double {
         let epsilon = 1e-8
+        let lambda = 0.03
+        let now = Date()
         
         var weightedSum = 0.0
         var totalWeight = 0.0
         
         for neighbor in neighbors {
-            let weight = 1.0 / (neighbor.distance + epsilon)
-            weightedSum += weight * neighbor.satisfaction
+            guard let satisfaction = neighbor.entry.userSatisfactionScore else { continue }
+
+            let ageSeconds = now.timeIntervalSince(neighbor.entry.day)
+            //decay factor to prioritize current data if a user imports data from CSV
+            //idea from QnA from presentation.
+            let ageDays = max(0.0, ageSeconds / (60 * 60 * 24))
+            let timeDecay = exp(-lambda * ageDays)
+
+            let distanceWeight = 1.0 / (neighbor.distance + epsilon)
+
+            let weight = timeDecay * distanceWeight
+            weightedSum += weight * satisfaction
             totalWeight += weight
         }
         
+        guard totalWeight > 0 else { return 0.0 }
         return weightedSum / totalWeight
     }
 }
