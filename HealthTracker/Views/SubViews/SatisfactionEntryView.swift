@@ -8,6 +8,20 @@
 import SwiftUI
 import HealthKit
 
+
+/// A detail view for reviewing health metrics and recording a satisfaction
+/// score for a specific date.
+///
+/// 'SatisfactionEntryView' fetches HealthKit data for the given 'date'
+/// and displays a summary of daily metrics, and lets the user input how 
+/// happy they were on that day using 'SatisfactionScoreEntryView'.
+///
+/// When health metrics or the satisfaction score change, the 
+/// 'satisfactionEntry' is updated and 'updateEntryModel' is called so
+/// the parent view can persist or refresh its data.
+///
+/// If no health data is available for the date the view displays an 
+/// appropriate message instead of metrics.
 @MainActor
 struct SatisfactionEntryView: View {
     let date: Date
@@ -99,7 +113,15 @@ struct SatisfactionEntryView: View {
             updateSatisfactionEntry()
         }
     }
-    
+
+    /// Synchronizes the bound 'satisfactionEntry' with the latest
+    /// health metrics and satisfaction score. This method is triggered 
+    /// whenever 'metrics' or 'currentSatisfactionScore' changes.
+    ///
+    /// If 'satisfactionEntry' isn't 'nil', then this method will 
+    /// update its health-related fields using 'metrics', if available,
+    /// update its 'userSatisfactionScore' using 'currentSatisfactionScore', if available,
+    /// call 'updateEntryModel()' so the parent can persist or refresh.
     private func updateSatisfactionEntry() {
         if satisfactionEntry != nil {
             if metrics != nil {
@@ -111,7 +133,15 @@ struct SatisfactionEntryView: View {
             updateEntryModel()
         }
     }
-    
+
+    /// Computes the end of the day timestamp (23:59:59) for a given date.
+    ///
+    /// This is used to limit HealthKit queries to the end of the selected day.
+    ///
+    /// - Parameters:
+    ///   - date: The date whose end-of-day boundary is requested.
+    /// - Returns:
+    ///   - 'date': A date representing 23:59:59 on the same calendar day.
     private func endOfDay(from date: Date) -> Date {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: date)
         components.hour = 23
