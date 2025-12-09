@@ -9,6 +9,16 @@ import SwiftUI
 import HealthKit
 import SwiftData
 
+/// The main container view for the app. Manages overall navigation and
+/// presenting the primary tabs of Home and Calendar.
+///
+/// 'ContentView' checks whether HealthKit is available on the device and,
+/// if so, will display a 'TabView' containing:
+///  - 'HomeView': The daily satisfaction check-in screen.
+///  - 'CalendarView': A month based view for visualizing and editing
+///    historical satisfaction entries.
+///
+/// If HealthKit is not supported on the device, a message is shown instead.
 struct ContentView: View {
     private enum Tab { case home, calendar }
 
