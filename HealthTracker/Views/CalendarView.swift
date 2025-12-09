@@ -124,7 +124,15 @@ struct CalendarView: View {
         .padding(.horizontal, 8)
     }
 
-    // One calendar cell which shows day number, optional user satisfaction score, and a color fill based on that score
+    /// Renders a single calendar grid cell for the provided day.
+    /// When tapped, the cell loads or creates the associated 'SatisfactionEntry'
+    /// and shows the entry view for that day with the statistics.
+    ///
+    /// Displays: the day number, an optional satisfaction score,
+    /// a background color reflecting the user's satisfaction score.
+    ///
+    /// - Parameters:
+    ///   - day: The date represented by this calendar cell.
     @ViewBuilder
     private func dayCell(day: Date) -> some View {
         let score = scoresByDay[day.startOfDay]
@@ -161,7 +169,12 @@ struct CalendarView: View {
         .buttonStyle(.plain)
     }
 
-    // Helper method to fetch the entry for a specific date (if there exists one)
+    /// Fetches the existing 'SatisfactionEntry' for a given day, if any.
+    ///
+    /// - Parameters:
+    ///   - day: A calendar date.
+    /// - Returns: 
+    ///   - 'date?': The existing entry for that date, or 'nil' if none exists.
     private func fetchEntry(for day: Date) -> SatisfactionEntry? {
         let dayStart = day.startOfDay
         let descriptor = FetchDescriptor<SatisfactionEntry>(
@@ -171,7 +184,11 @@ struct CalendarView: View {
         return (try? context.fetch(descriptor).first) ?? nil
     }
     
-    // Helper Method to look up an entry for the current day selected and load it if it exists, if not, it will create an entry.
+    /// Ensures that an entry exists for 'selectedDate'.
+    ///
+    /// If an entry is already stored for that date, it is loaded into 'entry'.
+    /// Otherwise, a new 'SatisfactionEntry' is created, inserted into the context,
+    /// saved, and then assigned to 'entry'.
     private func ensureEntry() {
         let day = selectedDate.startOfDay
         if let existing = fetchEntry(for: day) {
@@ -184,7 +201,9 @@ struct CalendarView: View {
         }
     }
     
-    // Helper Method to delete an entry for the current day selected (only shows up if there is an entry for that day)
+    /// Deletes the currently selected satisfaction entry, if any, from storage.
+    ///
+    /// After deletion, the view refreshes cached scores and clears the 'entry' state.
     private func deleteCurrentEntry() {
         guard let entry
         else { return }
@@ -194,7 +213,10 @@ struct CalendarView: View {
         loadScores()
     }
     
-    // Fetches all SatisfactionEntry rows that fall within the visible month and caches them in a dictionary keyed by day
+    /// Loads all satisfaction scores for the visible month into 'scoresByDay'.
+    ///
+    /// Fetches 'SatisfactionEntry' objects within the month range, extracts their
+    /// scores, clamps values to 0-10, and stores them in a dictionary keyed by day.
     private func loadScores() {
         let (start, end) = monthDateRange()
         let descriptor = FetchDescriptor<SatisfactionEntry>(
@@ -211,7 +233,11 @@ struct CalendarView: View {
         }
     }
 
-    // Calculates the first day of the current month and the first day of next month for a date range
+    /// Computes the date range covering the visible month (relative to midnight).
+    ///
+    /// - Returns: A tuple containing:
+    ///   - start: the first day of the current month.
+    ///   - end: the first day of the next month.
     private func monthDateRange() -> (start: Date, end: Date) {
         let cal = Calendar.current
         let comps = cal.dateComponents([.year, .month], from: monthAnchor)
@@ -220,7 +246,12 @@ struct CalendarView: View {
         return (start, end)
     }
 
-    // Produces the grid cells for the month with empty spaces for the first week offset, followed by actual Date values for each day and then trailing empty spaces to complete the last week row
+    /// Builds the grid representation of the month, including padding cells.
+    ///
+    /// Produces an array of optional dates where:
+    ///  - leading 'nil' values align and pad the first day to the correct weekday,
+    ///  - actual dates fill the remainder of the month,
+    ///  - trailing 'nil' values complete and pad the final row so the grid is rectangular.
     private func cellsForMonth() -> [Date?] {
         let cal = Calendar.current
         let (start, _) = monthDateRange()
@@ -240,7 +271,15 @@ struct CalendarView: View {
         return cells
     }
 
-    // Helper function to map user satisfaction score to a color where closer to 0 is red, yellow is around 5, and green is 10
+    /// Maps a satisfaction score to a color gradient.
+    ///
+    /// Scores near 0 appear red, middle ranged scores appear yellow,
+    /// and high scores approach green.
+    ///
+    /// - Parameters:
+    ///   - score: Optional daily satisfaction value.
+    /// - Returns: A tuple containing:
+    ///   - 'Color': A background `Color` appropriate for that score.
     private func backgroundColor(for score: Double?) -> Color {
         guard let score = score else { return .clear }
         let t = Double(score) / 10.0
