@@ -104,7 +104,6 @@ struct SatisfactionScoreEntryView: View {
     ///
     /// - Parameters:
     ///   - score: The score value from 1 to 10 used to determine the color.
-    ///
     /// - Returns:
     ///   - 'Color': representing the color for the given score, clear if nil.
     private func backgroundColor(for score: Int?) -> Color {
