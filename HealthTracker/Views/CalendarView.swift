@@ -7,6 +7,24 @@ import SwiftUI
 import SwiftData
 internal import UniformTypeIdentifiers
 
+
+/// An interactive calendar for viewing and editing daily satisfaction entries.
+///
+/// 'CalendarView' displays a full month grid, highlights the selected date,
+/// shows user satisfaction scores 0 to 10 for each day, and allows the user to:
+///  - create or edit a `SatisfactionEntry` for a specific date,
+///  - delete an existing entry,
+///  - import additional entries from a CSV file,
+///  - navigate between months.
+///
+/// The view automatically fetches all `SatisfactionEntry` records for the
+/// currently visible month using SwiftData and caches them in a dictionary.
+/// It also presents a detail sheet when a day is tapped, letting the user
+/// update their satisfaction score.
+///
+/// - Parameters:
+///   - selectedDate: The date initially selected when the view loads.
+///   - onImportCSV: A callback executed when the user imports a CSV file. 
 struct CalendarView: View {
     @Environment(\.modelContext) private var context
 
