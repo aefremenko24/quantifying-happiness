@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+
+/// A slider selector that lets the user choose a daily
+/// satisfaction score between 1 and 10.
+///
+/// 'SatisfactionScoreEntryView' displays ten vertical bars which each represent
+/// a possible score value. The user can tap or drag across the bars to update
+/// the bound 'satisfactionScore'. The selected score is also displayed.
+///
+/// This view provides:
+///  - a visual color gradient based on the current score,
+///  - live updates as the user drags across the bars,
+///  - graceful handling when 'satisfactionScore' is 'nil'.
 struct SatisfactionScoreEntryView: View {
     @Binding var satisfactionScore: Int?
     
@@ -59,7 +71,17 @@ struct SatisfactionScoreEntryView: View {
         .frame(height: barHeight + 40)
         .sensoryFeedback(.selection, trigger: satisfactionScore)
     }
-    
+
+    /// Updates the bound satisfaction score based on the drag location.
+    ///
+    /// This method converts the user's horizontal drag position into a bar
+    /// index of 1 to 10. The value is clamped to the valid range and assigned
+    /// to 'satisfactionScore' if it differs from the current value.
+    ///
+    /// - Parameters:
+    ///   - location: The drag location within the view.
+    ///   - geometry: A 'GeometryProxy' describing the layout size so the
+    ///               method can correctly compute bar widths and spacing.
     private func updateValue(for location: CGPoint, in geometry: GeometryProxy) {
         let padding: CGFloat = 16
         let adjustedX = location.x - padding
@@ -75,7 +97,16 @@ struct SatisfactionScoreEntryView: View {
         }
     }
     
-    // Helper function to map user satisfaction score to a color where closer to 0 is red, yellow is around 5, and green is 10
+    /// Maps a satisfaction score to a smooth red, yellow, green color gradient.
+    ///
+    /// Scores near 1 appear red, scores near 5 appear yellow, and scores near
+    /// 10 appear green.
+    ///
+    /// - Parameters:
+    ///   - score: The score value from 1 to 10 used to determine the color.
+    ///
+    /// - Returns:
+    ///   - 'Color': representing the color for the given score, clear if nil.
     private func backgroundColor(for score: Int?) -> Color {
         guard let score = score else { return .clear }
         let t = Double(score) / 10.0
